@@ -14,7 +14,7 @@ export function Print(props) {
   }
 
   function dataContent(value) {
-
+    console.log(value);
     // eslint-disable-next-line
     value.map(items => {
 
@@ -47,17 +47,43 @@ export function Print(props) {
             items.rows[i]?.map(item => {
               if (item.components.length === 0) item.components.push({ content: '' })
             });
+          }
 
-            //convert array
-            const data = items.rows.map(row => row.map(child => Array.from(child.components, x => x.content)).reduce((prev, next) => {
-              return prev.concat(next);
-            }))
+          //convert array
+          const data = items.rows.map(row => row.map(child => Array.from(child.components, x => {
+            let result = { text: x.content }
+            if (x.attributes?.rowspan) {
+              if (parseInt(x.attributes.rowspan || "") > 0) {
+                result = {
+                  text: x.content,
+                  rowSpan: parseInt(x.attributes.rowspan || ""),
+                }
+              } else {
+                result = {}
+              }
+            }
+            if (x.attributes?.colspan) {
+              if (parseInt(x.attributes.colspan || "") > 0) {
+                result = {
+                  text: x.content,
+                  colSpan: parseInt(x.attributes.colspan || ""),
+                }
+              } else {
+                result = {}
+              }
+            }
+            return result
+          }
+          )).reduce((prev, next) => {
+            return prev.concat(next);
+          }))
 
+          for (let i = 0; i < data.length; i++) {
             //header table
             if (i === 0) {
               header.push(data[0])
             }
-            //body table
+            // //body table
             else {
               body.push(data[i])
             }
