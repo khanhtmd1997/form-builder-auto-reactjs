@@ -9,15 +9,19 @@ export function Print(props) {
 
   const { data, isView } = props;
   const dd = {
-    content: [],
-    styles: {}
+    content: [
+      // {
+      //   table: {
+      //     body: []
+      //   }
+      // }
+    ],
+    headerRows: 1,
   }
 
   function dataContent(value) {
-    console.log(value);
     // eslint-disable-next-line
     value.map(items => {
-
       switch (items.label) {
         case 'HTML':
           let fontSize = 14
@@ -30,16 +34,19 @@ export function Print(props) {
           else fontSize = 10.72
 
           return dd.content.push({
-            text: items.content,
+            text: items.className.indexOf('header') > -1 ? items.content + '\n\n' : items.content,
             style: {
               fontSize: fontSize,
-              alignment: items.className === 'center' ? 'center' : items.className === 'left' ? 'left' : 'right'
+              alignment: items.className.indexOf('center') > -1 ? 'center' : items.className.indexOf('left') > -1 ? 'left' : 'right'
             }
           })
 
         case _TABLE:
+          //
+
           let header = [];
           let body = [];
+          let configWidth = [];
 
           for (let i = 0; i < items.rows.length; i++) {
             //check content not value => content = ''
@@ -53,25 +60,45 @@ export function Print(props) {
           const data = items.rows.map(row => row.map(child => Array.from(child.components, x => {
             let result = { text: x.content }
             if (x.attributes?.rowspan) {
-              if (parseInt(x.attributes.rowspan || "") > 0) {
+              if (parseInt(x.attributes.rowspan) > 0) {
                 result = {
-                  text: x.content,
-                  rowSpan: parseInt(x.attributes.rowspan || ""),
+                  ...result,
+                  rowSpan: parseInt(x.attributes.rowspan),
                 }
               } else {
                 result = {}
               }
             }
             if (x.attributes?.colspan) {
-              if (parseInt(x.attributes.colspan || "") > 0) {
+              if (parseInt(x.attributes.colspan) > 0) {
                 result = {
-                  text: x.content,
-                  colSpan: parseInt(x.attributes.colspan || ""),
+                  ...result,
+                  colSpan: parseInt(x.attributes.colspan),
+                  border: x.className === 'titleTable' ? [false, false, false, true] : [true, true, true, true]
                 }
               } else {
                 result = {}
               }
             }
+            if (x.attributes?.header) {
+              if (x.attributes?.header === "true") {
+                if (x.className !== 'hideBorder') {
+                  result = {
+                    ...result,
+                    border: [false, false, false, true],
+                  }
+                } else {
+                  result = {
+                    ...result,
+                    border: [false, false, false, false],
+                  }
+                }
+
+              } else {
+                result = {}
+              }
+            }
+
             return result
           }
           )).reduce((prev, next) => {
@@ -89,71 +116,73 @@ export function Print(props) {
             }
           }
 
-          //get data render pdf
+          let lengthWidth = data[0]?.length
+          for (let j = 0; j < lengthWidth; j++) {
+            configWidth.push('*')
+
+          }
+
+          // if (lengthWidth < 3) body.pop();
           return dd.content.push({
-            style: '',
             table: {
               heights: 15,
-              widths: [100, '*', 200, '*'],
+              widths: configWidth,
               body: [
                 ...header,
                 ...body
               ]
             },
-            layout: {
-              hLineWidth: function (i, node) {
-                return (i === 0 || i === node.table.body.length) ? 2 : 1;
-              },
-              vLineWidth: function (i, node) {
-                return (i === 0 || i === node.table.widths.length) ? 2 : 1;
-              },
-              hLineColor: function (i, node) {
-                return 'black';
-              },
-              vLineColor: function (i, node) {
-                return 'black';
-              },
-              hLineStyle: function (i, node) {
-                if (i === 0 || i === node.table.body.length) {
-                  return null;
-                }
-                //dọc
-                return { dash: { length: 1, space: 1 } };
-              },
-              vLineStyle: function (i, node) {
-                if (i === 0 || i === node.table.widths.length) {
-                  return null;
-                }
-                //ngang
-                return { dash: { length: 1 } };
-              },
-            }
+            // layout: {
+            //   hLineWidth: function (i, node) {
+            //     return (i === 0 || i === node.table.body.length) ? 2 : 1;
+            //   },
+            //   vLineWidth: function (i, node) {
+            //     return (i === 0 || i === node.table.widths.length) ? 2 : 1;
+            //   },
+            //   hLineColor: function (i, node) {
+            //     return 'black';
+            //   },
+            //   vLineColor: function (i, node) {
+            //     return 'black';
+            //   },
+            //   hLineStyle: function (i, node) {
+            //     if (i === 0 || i === node.table.body.length) {
+            //       return null;
+            //     }
+            //     //dọc
+            //     return { dash: { length: 1, space: 1 } };
+            //   },
+            //   vLineStyle: function (i, node) {
+            //     if (i === 0 || i === node.table.widths.length) {
+            //       return null;
+            //     }
+            //     //ngang
+            //     return { dash: { length: 1 } };
+            //   },
+            // }
           })
-
-        case 'Columns':
-          let textColumns = [];
-          for (let i = 0; i < items.columns.length; i++) {
-            textColumns = items.columns.map(row => Array.from(row.components, x => x.content)).reduce((prev, next) => {
-              return prev.concat(next);
-            })
-            console.log(textColumns);
-
-          }
-          // return dd.content.push({
-          //   style: '',
-          //   text: textColumns,
-          //   layout: {
-          //     vLineStyle: function (i, node) {
-          //       console.log(i, node);
-          //       if (i === 0 || i === node.table.widths.length) {
-          //         return null;
-          //       }
-          //       //ngang
-          //       return { dash: { length: 1 } };
-          //     },
-          //   }
-          // })
-          break
+        // case 'Columns':
+        //   let textColumns = [];
+        //   for (let i = 0; i < items.columns.length; i++) {
+        //     textColumns = items.columns.map(row => Array.from(row.components, x => x.content)).reduce((prev, next) => {
+        //       return prev.concat(next);
+        //     })
+        //   }
+        //   // return dd.content.push({
+        //   //   style: '',
+        //   //   text: textColumns,
+        //   //   layout: {
+        //   //     vLineStyle: function (i, node) {
+        //   //       console.log(i, node);
+        //   //       if (i === 0 || i === node.table.widths.length) {
+        //   //         return null;
+        //   //       }
+        //   //       //ngang
+        //   //       return { dash: { length: 1 } };
+        //   //     },
+        //   //   }
+        //   // })
+        //   break
 
         case _TEXTFIELD:
           if (items.placeholder !== '' || items.placeholder !== undefined) return dd.content.push(items.placeholder)
@@ -199,13 +228,74 @@ export function Print(props) {
     })
   }
 
+
   useEffect(() => {
-    dataContent(data);
+    // eslint-disable-next-line
+    data.map(item => {
+      if (item.class !== 'notDisplay') {
+        // eslint-disable-next-line
+        item.rows.map(el => {
+          // eslint-disable-next-line
+          el.map(child => {
+            // console.log(111, el);
+            dataContent(child.components);
+          })
+
+        })
+      }
+      else return null
+    })
     // eslint-disable-next-line
   }, [data])
 
   const onClickPdfMakeHandler = async (data) => {
-    pdfMake.createPdf(data).open();
+    let width = []
+    for (let i = 0; i < data.content.length; i++) {
+      width.push('*')
+    }
+    let dd = {
+      content: [
+        {
+          table: {
+            widths: width,
+            body: [
+              data.content
+            ]
+          },
+          layout: {
+            hLineWidth: function (i, node) {
+              return (i === 0 || i === node.table.body.length) ? 2 : 1;
+            },
+            vLineWidth: function (i, node) {
+              return (i === 0 || i === node.table.widths.length) ? 2 : 1;
+            },
+            hLineColor: function (i, node) {
+              return 'white';
+            },
+            vLineColor: function (i, node) {
+              return 'white';
+            },
+            hLineStyle: function (i, node) {
+              if (i === 0 || i === node.table.body.length) {
+                return null;
+              }
+              //dọc
+              return { dash: { length: 1, space: 1 } };
+            },
+            vLineStyle: function (i, node) {
+              if (i === 0 || i === node.table.widths.length) {
+                return null;
+              }
+              //ngang
+              return { dash: { length: 1 } };
+            },
+          }
+        }
+      ]
+    }
+    console.log(data);
+    // console.log(dd);
+    pdfMake.createPdf(dd).open();
   }
 
   return (

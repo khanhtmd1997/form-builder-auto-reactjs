@@ -17,12 +17,12 @@ export default function App() {
     Formio.createForm(document.getElementById("formio-result"), {
       components: formData.components
     }).then((form) => {
-      // console.log(12312312, form.component.components[0].rows);
       if (form.component.components && form.component.components.length > 0) {
         setResult(form.component.components)
       }
     });
   };
+
   return (
     <div className="App">
       <h2>Form builder playground: NGUYỄN VĂN KHÁNH</h2>
