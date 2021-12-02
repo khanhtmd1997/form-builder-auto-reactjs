@@ -74,7 +74,7 @@ export function Print(props) {
                 result = {
                   ...result,
                   colSpan: parseInt(x.attributes.colspan),
-                  border: x.className === 'titleTable' ? [false, false, false, true] : [true, true, true, true]
+                  border: x.className === 'titleTable' ? [false, false, false, false] : [true, true, true, true]
                 }
               } else {
                 result = {}
@@ -106,6 +106,7 @@ export function Print(props) {
           }))
 
           for (let i = 0; i < data.length; i++) {
+
             //header table
             if (i === 0) {
               header.push(data[0])
@@ -122,7 +123,7 @@ export function Print(props) {
 
           }
 
-          // if (lengthWidth < 3) body.pop();
+          // if (lengthWidth <= 3) body.pop();
           return dd.content.push({
             table: {
               heights: 15,
@@ -132,57 +133,31 @@ export function Print(props) {
                 ...body
               ]
             },
-            // layout: {
-            //   hLineWidth: function (i, node) {
-            //     return (i === 0 || i === node.table.body.length) ? 2 : 1;
-            //   },
-            //   vLineWidth: function (i, node) {
-            //     return (i === 0 || i === node.table.widths.length) ? 2 : 1;
-            //   },
-            //   hLineColor: function (i, node) {
-            //     return 'black';
-            //   },
-            //   vLineColor: function (i, node) {
-            //     return 'black';
-            //   },
-            //   hLineStyle: function (i, node) {
-            //     if (i === 0 || i === node.table.body.length) {
-            //       return null;
-            //     }
-            //     //dọc
-            //     return { dash: { length: 1, space: 1 } };
-            //   },
-            //   vLineStyle: function (i, node) {
-            //     if (i === 0 || i === node.table.widths.length) {
-            //       return null;
-            //     }
-            //     //ngang
-            //     return { dash: { length: 1 } };
-            //   },
-            // }
           })
-        // case 'Columns':
-        //   let textColumns = [];
-        //   for (let i = 0; i < items.columns.length; i++) {
-        //     textColumns = items.columns.map(row => Array.from(row.components, x => x.content)).reduce((prev, next) => {
-        //       return prev.concat(next);
-        //     })
-        //   }
-        //   // return dd.content.push({
-        //   //   style: '',
-        //   //   text: textColumns,
-        //   //   layout: {
-        //   //     vLineStyle: function (i, node) {
-        //   //       console.log(i, node);
-        //   //       if (i === 0 || i === node.table.widths.length) {
-        //   //         return null;
-        //   //       }
-        //   //       //ngang
-        //   //       return { dash: { length: 1 } };
-        //   //     },
-        //   //   }
-        //   // })
-        //   break
+
+        case 'Columns':
+          let textColumns = [];
+          for (let i = 0; i < items.columns.length; i++) {
+            textColumns = items.columns.map(row => Array.from(row.components, x => x.content)).reduce((prev, next) => {
+              return prev.concat(next);
+            })
+
+          }
+          // return dd.content.push({
+          //   style: '',
+          //   text: textColumns,
+          //   layout: {
+          //     vLineStyle: function (i, node) {
+          //       console.log(i, node);
+          //       if (i === 0 || i === node.table.widths.length) {
+          //         return null;
+          //       }
+          //       //ngang
+          //       return { dash: { length: 1 } };
+          //     },
+          //   }
+          // })
+          break
 
         case _TEXTFIELD:
           if (items.placeholder !== '' || items.placeholder !== undefined) return dd.content.push(items.placeholder)
@@ -230,6 +205,7 @@ export function Print(props) {
 
 
   useEffect(() => {
+    console.log(data);
     // eslint-disable-next-line
     data.map(item => {
       if (item.class !== 'notDisplay') {
@@ -237,7 +213,6 @@ export function Print(props) {
         item.rows.map(el => {
           // eslint-disable-next-line
           el.map(child => {
-            // console.log(111, el);
             dataContent(child.components);
           })
 
@@ -249,6 +224,7 @@ export function Print(props) {
   }, [data])
 
   const onClickPdfMakeHandler = async (data) => {
+    console.log(data);
     let width = []
     for (let i = 0; i < data.content.length; i++) {
       width.push('*')
@@ -293,8 +269,6 @@ export function Print(props) {
         }
       ]
     }
-    console.log(data);
-    // console.log(dd);
     pdfMake.createPdf(dd).open();
   }
 
