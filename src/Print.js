@@ -1,7 +1,23 @@
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { useEffect, useState } from "react";
-import { _NUMBER, _PASSWORD, _TABLE, _TEXTAREA, _TEXTFIELD } from './contants';
+import {
+  _CENTER,
+  _HIDEBORDER,
+  _HTMLELEMENT,
+  _LEFT,
+  _NOTDISPLAY,
+  _RIGHT,
+  _TABLE,
+  _TAGH1,
+  _TAGH2,
+  _TAGH3,
+  _TAGH4,
+  _TAGH5,
+  _TAGHP,
+  _TITLETABLE,
+  _TRUESTRING
+} from './contants';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -40,15 +56,15 @@ export function Print(props) {
           result = {
             ...result,
             colSpan: parseInt(x.attributes.colspan),
-            border: x.className === 'titleTable' ? [false, false, false, false] : [true, true, true, true]
+            border: x.className === _TITLETABLE ? [false, false, false, false] : [true, true, true, true]
           }
         } else {
           result = {}
         }
       }
       if (x.attributes?.header) {
-        if (x.attributes?.header === "true") {
-          if (x.className !== 'hideBorder') {
+        if (x.attributes?.header === _TRUESTRING) {
+          if (x.className !== _HIDEBORDER) {
             result = {
               ...result,
               border: [false, false, false, true],
@@ -286,23 +302,23 @@ export function Print(props) {
   function drawChildItem(rawItem) {
     let type = rawItem.type;
     switch (type) {
-      case "table":
+      case _TABLE:
         return pdfTable(rawItem);
-      case 'htmlelement':
+      case _HTMLELEMENT:
         let fontSize = 14
 
-        if (rawItem.tag === 'h1') fontSize = 32
-        else if (rawItem.tag === 'h2') fontSize = 24
-        else if (rawItem.tag === 'h3') fontSize = 18.72
-        else if (rawItem.tag === 'h4' || rawItem.tag === 'p') fontSize = 16
-        else if (rawItem.tag === 'h5') fontSize = 13.28
+        if (rawItem.tag === _TAGH1) fontSize = 32
+        else if (rawItem.tag === _TAGH2) fontSize = 24
+        else if (rawItem.tag === _TAGH3) fontSize = 18.72
+        else if (rawItem.tag === _TAGH4 || rawItem.tag === _TAGHP) fontSize = 16
+        else if (rawItem.tag === _TAGH5) fontSize = 13.28
         else fontSize = 10.72
 
         return {
           text: rawItem.content + '\n\n',
           style: {
             fontSize: fontSize,
-            alignment: rawItem.className === 'center' ? 'center' : rawItem.className === 'left' ? 'left' : 'right'
+            alignment: rawItem.className === _CENTER ? _CENTER : rawItem.className === _LEFT ? _LEFT : _RIGHT
           }
         }
 
@@ -372,8 +388,10 @@ export function Print(props) {
   }
 
   function drawContent(rawData) {
+    // eslint-disable-next-line
     return rawData.map((rawItem) => {
-      if (rawItem.class === 'notDisplay' || rawItem.type !== "table") return
+      // eslint-disable-next-line
+      if (rawItem.class === _NOTDISPLAY || rawItem.type !== _TABLE) return
       else return drawTable(rawItem);
     });
   }
