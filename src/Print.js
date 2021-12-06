@@ -23,8 +23,9 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export function Print(props) {
 
-  const { dataTableReport, isView } = props;
+  const { dataTableReport, dataAPI, isView } = props;
 
+  //convert pdf table
   function pdfTable(dataTable) {
     //
     let header = [];
@@ -40,7 +41,29 @@ export function Print(props) {
 
     //convert array
     const data = dataTable.rows.map(row => row.map(child => Array.from(child.components, x => {
-      let result = { text: x.content }
+      let result = {}
+      // eslint-disable-next-line
+      dataAPI.map(item => {
+        if (x.tags.length > 0) {
+          let property = x.tags[0];
+          if (x.content !== '') {
+            if (item[x.key] !== undefined && item[x.key] !== null) result = { text: x.content + ': ' + item[x.key][property] }
+            else result = { text: x.content }
+          } else {
+            if (item[x.key] !== undefined && item[x.key] !== null) result = { text: item[x.key][property] }
+            else result = { text: x.content }
+          }
+        } else {
+          if (x.content !== '') {
+            if (item[x.key] !== undefined && item[x.key] !== null) result = { text: x.content + ': ' + item[x.key] }
+            else result = { text: x.content }
+          } else {
+            if (item[x.key] !== undefined && item[x.key] !== null) result = { text: item[x.key] }
+            else result = { text: x.content }
+          }
+        }
+
+      })
       if (x.attributes?.rowspan) {
         if (parseInt(x.attributes.rowspan) > 0) {
           result = {
@@ -56,7 +79,7 @@ export function Print(props) {
           result = {
             ...result,
             colSpan: parseInt(x.attributes.colspan),
-            border: x.className === _TITLETABLE ? [false, false, false, false] : [true, true, true, true]
+            border: x.className === _TITLETABLE ? [false, false, false, false] : [true, true, true, true],
           }
         } else {
           result = {}
@@ -64,15 +87,17 @@ export function Print(props) {
       }
       if (x.attributes?.header) {
         if (x.attributes?.header === _TRUESTRING) {
-          if (x.className !== _HIDEBORDER) {
+          if (x.className.indexOf(_HIDEBORDER) === -1) {
             result = {
               ...result,
               border: [false, false, false, true],
+              alignment: x.className.indexOf(_CENTER) > -1 ? 'center' : x.className.indexOf(_RIGHT) > -1 ? 'right' : 'left'
             }
           } else {
             result = {
               ...result,
               border: [false, false, false, false],
+              alignment: x.className.indexOf(_CENTER) > -1 ? 'center' : x.className.indexOf(_RIGHT) > -1 ? 'right' : 'left'
             }
           }
 
@@ -80,6 +105,7 @@ export function Print(props) {
           result = {}
         }
       }
+
 
       return result
     }
@@ -111,7 +137,7 @@ export function Print(props) {
         body: [
           ...header,
           ...body
-        ]
+        ],
       },
     }
   }
@@ -328,19 +354,20 @@ export function Print(props) {
   }
 
   function drawTable(rawData) {
+    console.log(rawData);
     const body = rawData.rows.map((row) => {
       return row.map((rowItem) => {
         return rowItem.components?.map((component) => {
-          if (component.rows.length >= 3) {
-            if (component.rows[0].length !== component.rows[2].length) {
-              if (component.rows[0].length !== component.rows[1].length) {
+          if (component.rows?.length >= 3) {
+            if (component.rows[0]?.length !== component.rows[2]?.length) {
+              if (component.rows[0]?.length !== component.rows[1]?.length) {
                 component.rows.pop()
                 component.rows.pop()
               } else component.rows.pop()
             }
           }
 
-          if (component.numRows !== component.rows.length) {
+          if (component.numRows !== component.rows?.length) {
             component.rows.pop()
           }
           return drawChildItem(component);
