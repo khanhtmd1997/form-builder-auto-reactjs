@@ -331,7 +331,6 @@ export function Print(props) {
     const body = rawData.rows.map((row) => {
       return row.map((rowItem) => {
         return rowItem.components?.map((component) => {
-          console.log(component);
           if (component.rows.length >= 3) {
             if (component.rows[0].length !== component.rows[2].length) {
               if (component.rows[0].length !== component.rows[1].length) {
@@ -339,6 +338,10 @@ export function Print(props) {
                 component.rows.pop()
               } else component.rows.pop()
             }
+          }
+
+          if (component.numRows !== component.rows.length) {
+            component.rows.pop()
           }
           return drawChildItem(component);
         })
