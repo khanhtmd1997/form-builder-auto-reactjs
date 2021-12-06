@@ -15,7 +15,7 @@ export default function ReportAuto() {
     {
       "id": 25,
       "riyousyaId": 270,
-      "riyousyaName": "Name ACB",
+      "riyousyaName": "あああ",
       "riyousyaFurigana": "アアア",
       "riyousyaGender": 1,
       "riyousyaBirthDay": "1946-08-06",

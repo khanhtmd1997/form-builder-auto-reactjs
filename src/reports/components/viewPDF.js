@@ -53,7 +53,17 @@ export default function ViewPDF(props) {
             if (item[x.key] !== undefined && item[x.key] !== null) result = { text: item[x.key][property] }
             else result = { text: x.content }
           }
-        } else {
+        }
+        else if (x.attributes.sex === _TRUESTRING) {
+          if (x.content !== '') {
+            if (item[x.key] !== undefined && item[x.key] !== null) result = { text: x.content + ': ' + (item[x.key] === 1 ? 'check male uncheck female' : 'uncheck male check female') }
+            else result = { text: x.content }
+          } else {
+            if (item[x.key] !== undefined && item[x.key] !== null) result = { text: item[x.key] }
+            else result = { text: x.content }
+          }
+        }
+        else {
           if (x.content !== '') {
             if (item[x.key] !== undefined && item[x.key] !== null) result = { text: x.content + ': ' + item[x.key] }
             else result = { text: x.content }
@@ -91,13 +101,13 @@ export default function ViewPDF(props) {
             result = {
               ...result,
               border: [false, false, false, true],
-              alignment: x.className.indexOf(_CENTER) > -1 ? 'center' : x.className.indexOf(_RIGHT) > -1 ? 'right' : 'left'
+              alignment: x.className.indexOf(_CENTER) > -1 ? _CENTER : x.className.indexOf(_RIGHT) > -1 ? _RIGHT : _LEFT
             }
           } else {
             result = {
               ...result,
               border: [false, false, false, false],
-              alignment: x.className.indexOf(_CENTER) > -1 ? 'center' : x.className.indexOf(_RIGHT) > -1 ? 'right' : 'left'
+              alignment: x.className.indexOf(_CENTER) > -1 ? _CENTER : x.className.indexOf(_RIGHT) > -1 ? _RIGHT : _LEFT
             }
           }
 
