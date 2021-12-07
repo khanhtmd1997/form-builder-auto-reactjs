@@ -44,7 +44,12 @@ export default function ViewPDF(props) {
       let result = {}
       // eslint-disable-next-line
       dataAPI.map(item => {
-        if (x.tags.length > 0) {
+        if (x.type === 'checkbox') {
+          if (item[x.key] !== undefined && item[x.key] !== null) result = { text: (item[x.key] === '1' || item[x.key] === 1 ? 'check ' : 'uncheck ') + x.label }
+          else result = { text: x.content }
+        }
+        else if (x.tags?.length === 1) {
+          console.log(x.tags);
           let property = x.tags[0];
           if (x.content !== '') {
             if (item[x.key] !== undefined && item[x.key] !== null) result = { text: x.content + ': ' + item[x.key][property] }
@@ -54,7 +59,18 @@ export default function ViewPDF(props) {
             else result = { text: x.content }
           }
         }
-        else if (x.attributes.sex === _TRUESTRING) {
+        else if (x.tags?.length === 2) {
+          let propertyOne = x.tags[0];
+          let propertyTwo = x.tags[1];
+          if (x.content !== '') {
+            if (item[x.key] !== undefined && item[x.key] !== null) result = { text: x.content + ': ' + (item[x.key] === 1 || item[x.key] === '1' ? ('■ ' + propertyOne + ' □ ' + propertyTwo) : ('□ ' + propertyOne + ' ■ ' + propertyTwo)) }
+            else result = { text: x.content }
+          } else {
+            if (item[x.key] !== undefined && item[x.key] !== null) result = { text: x.content + ': ' + (item[x.key] === 1 || item[x.key] === '1' ? ('■ ' + propertyOne + ' □ ' + propertyTwo) : ('□ ' + propertyOne + ' ■ ' + propertyTwo)) }
+            else result = { text: x.content }
+          }
+        }
+        else if (x.attributes?.sex === _TRUESTRING) {
           if (x.content !== '') {
             if (item[x.key] !== undefined && item[x.key] !== null) result = { text: x.content + ': ' + (item[x.key] === 1 ? 'check male uncheck female' : 'uncheck male check female') }
             else result = { text: x.content }
