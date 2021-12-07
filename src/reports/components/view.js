@@ -103,6 +103,32 @@ export default function View(props) {
     }
   }
 
+  function convertData(x, dataChildItem) {
+    let width = (x.attributes && x.attributes.width !== '') ? x.attributes.width : '*';
+    let propertyValue = (x.attributes && x.attributes.birthday === 'true') ? formatDateJapan(dataChildItem[x.key]) : dataChildItem[x.key];
+    let alignment = x.className && x.className.indexOf(_CENTER) > -1 ? _CENTER : x.className && x.className.indexOf(_RIGHT) > -1 ? _RIGHT : _LEFT;
+    let textColumns = (x.attributes && x.attributes.selectbox === 'true' && x.attributes.sex === 'true') ? generateCheckBoxString(genderOption, propertyValue) : dataChildItem[x.key];
+    let arr = [
+      {
+        id: x.content,
+        name: x.content
+      },
+      {
+        id: textColumns,
+        name: textColumns
+      }]
+    const unique = arr.filter((v, i, a) => a.findIndex(t => (t.id === v.id && t.name === v.name)) === i)
+    let result = {
+      text: unique.length === 1 ? unique[0].name : (unique[0].name + ' ' + unique[1].name),
+      width,
+      alignment,
+      textColumns,
+      propertyValue
+    };
+
+    return result
+  }
+
   function switchColumnsTable(dataChildItem, rawItem, dataMaster) {
     for (let i = 0; i < rawItem.rows.length; i++) {
       //check content not value => content = ''
@@ -112,29 +138,30 @@ export default function View(props) {
       });
     }
     const data = rawItem.rows.map(row => row.map(child => Array.from(child.components, x => {
-      let width = (x.attributes && x.attributes.width !== '') ? x.attributes.width : '*';
-      let propertyValue = (x.attributes && x.attributes.birthday === 'true') ? formatDateJapan(dataChildItem[x.key]) : dataChildItem[x.key];
-      let alignment = x.className && x.className.indexOf(_CENTER) > -1 ? _CENTER : x.className && x.className.indexOf(_RIGHT) > -1 ? _RIGHT : _LEFT;
-      let textColumns = (x.attributes && x.attributes.selectbox === 'true' && x.attributes.sex === 'true') ? generateCheckBoxString(genderOption, propertyValue) : dataChildItem[x.key];
-      let arr = [
-        {
-          id: x.content,
-          name: x.content
-        },
-        {
-          id: textColumns,
-          name: textColumns
-        }]
-      const unique = arr.filter((v, i, a) => a.findIndex(t => (t.id === v.id && t.name === v.name)) === i)
-      let result = {
-        text: unique.length === 1 ? unique[0].name : (unique[0].name + ' ' + unique[1].name),
-        width,
-        alignment,
-        textColumns,
-        propertyValue
-      };
+      return convertData(x, dataChildItem)
+      // let width = (x.attributes && x.attributes.width !== '') ? x.attributes.width : '*';
+      // let propertyValue = (x.attributes && x.attributes.birthday === 'true') ? formatDateJapan(dataChildItem[x.key]) : dataChildItem[x.key];
+      // let alignment = x.className && x.className.indexOf(_CENTER) > -1 ? _CENTER : x.className && x.className.indexOf(_RIGHT) > -1 ? _RIGHT : _LEFT;
+      // let textColumns = (x.attributes && x.attributes.selectbox === 'true' && x.attributes.sex === 'true') ? generateCheckBoxString(genderOption, propertyValue) : dataChildItem[x.key];
+      // let arr = [
+      //   {
+      //     id: x.content,
+      //     name: x.content
+      //   },
+      //   {
+      //     id: textColumns,
+      //     name: textColumns
+      //   }]
+      // const unique = arr.filter((v, i, a) => a.findIndex(t => (t.id === v.id && t.name === v.name)) === i)
+      // let result = {
+      //   text: unique.length === 1 ? unique[0].name : (unique[0].name + ' ' + unique[1].name),
+      //   width,
+      //   alignment,
+      //   textColumns,
+      //   propertyValue
+      // };
 
-      return result
+      // return result
 
     })).reduce((prev, next) => {
       return prev.concat(next);
@@ -161,30 +188,23 @@ export default function View(props) {
       fontSize: fontSize,
     }
 
-    return { text: rawItem.text, alignment: rawItem.alignment, width: rawItem.width, ...style }
-
-    // if (dataChildItem[rawItem.key] !== undefined && dataChildItem[rawItem.key] !== null) {
-    //   return {
-    //     rawItem
-    //     // ...style,
-
-    //   }
-    // } else {
-    //   return {
-    //     text: rawItem.content,
-    //     // ...style
-    //   }
-    // }
-
-    console.log();
-
+    return {
+      text: rawItem.text,
+      alignment: rawItem.alignment,
+      width: rawItem.width,
+      ...style
+    }
   }
 
   function renderDataSwitch(dataChildItem, rawItem, dataMaster) {
     let type = rawItem.type;
     switch (type) {
       case "htmlelement":
-        return switchHtmlElement(dataChildItem, rawItem, dataMaster)
+        let rawElement = {
+          text: rawItem.content,
+          alignment: rawItem.className.indexOf(_CENTER) > -1 ? _CENTER : rawItem.className.indexOf(_RIGHT) > -1 === _RIGHT ? _RIGHT : _LEFT,
+        }
+        return switchHtmlElement(dataChildItem, rawElement, dataMaster)
       case 'columns':
         const dataItem = {
           rows: [],
