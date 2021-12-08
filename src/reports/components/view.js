@@ -317,7 +317,7 @@ export default function View(props) {
     else if (tag === _TAGH3) fontSize = 18.72
     else if (tag === _TAGH4 || tag === _TAGHP) fontSize = 16
     else if (tag === _TAGH5) fontSize = 13.28
-    else fontSize = 10.72;
+    else fontSize = 8;
 
     return fontSize
   }
@@ -356,7 +356,6 @@ export default function View(props) {
         dataItem.rows.push(rawItem.columns)
         return switchDataTable(dataChildItem, dataItem, dataMaster)
       case _TABLE:
-        console.log(rawItem);
         return switchDataTable(dataChildItem, rawItem, dataMaster)
       default:
         break;
@@ -376,8 +375,19 @@ export default function View(props) {
 
 
   function buildPDFDefination(rawData) {
+    pdfMake.fonts = {
+      ipagp: {
+        normal: "ipagp.ttf",
+        bold: "ipagp.ttf",
+        italics: "ipagp.ttf",
+        bolditalics: "ipagp.ttf",
+      }
+    };
     let dd = {
       content: dataAPI.map(dataChildItem => drawContent(dataChildItem, rawData, dataMaster[0])),
+      defaultStyle: {
+        font: 'ipagp'
+      }
     }
     return dd;
   }
@@ -387,7 +397,7 @@ export default function View(props) {
 
     const index = pdfDefination.content[0].indexOf(undefined)
     pdfDefination.content[0].splice(index, 1)
-
+    console.log(pdfDefination);
     setPDFData(pdfDefination)
     // eslint-disable-next-line
   }, [dataTableReport])

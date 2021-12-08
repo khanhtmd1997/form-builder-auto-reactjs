@@ -13,15 +13,15 @@ export default function ReportAuto() {
   const [isView, setIsView] = useState(false)
   const data = [
     {
-      adlBathe: null,
-      adlDietaryIntake: null,
+      adlBathe: '0',
+      adlDietaryIntake: '0',
       adlDressingLower: null,
       adlDressingUpper: null,
       bedsoreDateOfOnset: null,
       bedsoreOther: null,
       bedsorePartFreeDescription: "ưerew",
       bedsorePartOther: '1',
-      dailyDegree: null,
+      dailyDegree: 'J1',
       depthEvaluation: null,
       evaluationInterval: null,
       granulationEvaluation: null,
