@@ -69,6 +69,10 @@ export default function View(props) {
     );
   }
 
+  function formatDate(dateStr) {
+    return dateStr ? dateStr.replaceAll("-", "/") : "";
+  }
+
   function generateCheckBoxString(options, optionSelected) {
     let result = "";
     options.forEach(item => {
@@ -93,6 +97,32 @@ export default function View(props) {
         });
     }
     return [];
+  }
+
+  function generateOptionArray(options, field, firstPosition, endPosition) {
+    if (options && options[field]) {
+      let optionsArr = options[field].split(";").filter((item) => !!item);
+      const startIndex = firstPosition || 0;
+      const endIndex = endPosition || optionsArr.length;
+      let resultOptions = [];
+      for (let i = startIndex; i < endIndex; i++) {
+        let temp = optionsArr[i].includes(":")
+          ? optionsArr[i].split(":")[0]
+          : optionsArr[i];
+        resultOptions.push({ label: optionsArr[i], value: temp });
+      }
+      return resultOptions;
+    }
+    return [];
+  }
+
+  function generateCheckBoxArray(options, optionSelected) {
+    return options.map(item => {
+      if (item.value === optionSelected)
+        return " ■" + item.label;
+      else
+        return " □" + item.label;
+    })
   }
 
   function getMargin(rawItem) {
@@ -140,7 +170,7 @@ export default function View(props) {
     return {
       margin: getMargin(rawItem),
       table: {
-        heights: 15,
+        heights: 10,
         widths: getWidthsTable(rawItem),
         body: [
           ...header,
@@ -204,16 +234,16 @@ export default function View(props) {
     return result
   }
 
-  function convertDataTable(x, dataChildItem, alignment, textColumns) {
+  function convertDataTable(x, dataChildItem, alignment, textColumns, listArr) {
+    let result = {};
 
-    let result = {}
     if (x.content !== '') {
-
       if (dataChildItem[x.key] !== undefined && dataChildItem[x.key] !== null) {
         result = {
           text: x.content + ' ' + textColumns,
           alignment,
-          fontSize: setFontSize(x.tag)
+          fontSize: setFontSize(x.tag),
+
         }
 
       }
@@ -221,19 +251,19 @@ export default function View(props) {
       else result = {
         text: x.content,
         alignment,
-        fontSize: setFontSize(x.tag)
+        fontSize: setFontSize(x.tag),
       }
     } else {
       if (dataChildItem[x.key] !== undefined && dataChildItem[x.key] !== null)
         result = {
           text: textColumns,
           alignment,
-          fontSize: setFontSize(x.tag)
+          fontSize: setFontSize(x.tag),
         }
       else result = {
         text: textColumns,
         alignment,
-        fontSize: setFontSize(x.tag)
+        fontSize: setFontSize(x.tag),
       }
     }
 
@@ -243,7 +273,6 @@ export default function View(props) {
           ...result,
           rowSpan: parseInt(x.attributes.rowspan),
           layout: x.className && x.className.indexOf('hideborder') ? true : false,
-          fontSize: setFontSize(x.tag)
         }
       } else {
         result = {}
@@ -255,12 +284,22 @@ export default function View(props) {
           ...result,
           colSpan: parseInt(x.attributes.colspan),
           border: x.className && x.className === _TITLETABLE ? [false, false, false, false] : [true, true, true, true],
-          fontSize: setFontSize(x.tag)
+          // fontSize: setFontSize(x.tag)
         }
       } else {
         result = {}
       }
     }
+
+    if (listArr) {
+      result = {
+        ...result,
+        text: '',
+        type: "none",
+        ol: listArr ? textColumns : []
+      }
+    }
+
     return result
   }
 
@@ -278,26 +317,39 @@ export default function View(props) {
       let width = (x.attributes && x.attributes.width !== '') ? x.attributes.width : '*';
       let propertyValue;
       let textColumns;
-
+      let listArr = false;
       if (x.key !== 'listData') {
         propertyValue = (x.attributes && x.attributes.birthday === 'true') ? formatDateJapan(dataChildItem[x.key]) : dataChildItem[x.key];
         textColumns = (x.attributes && x.attributes.selectbox === 'true' && x.attributes.sex === 'true')
           ? generateCheckBoxString(genderOption, propertyValue) : (x.attributes && x.attributes.birthday === 'true')
-            ? formatDateJapan(dataChildItem[x.key]) : dataChildItem[x.key];
+            ? formatDateJapan(dataChildItem[x.key]) : (x.attributes && x.attributes.formatdate === 'true')
+              ? formatDate(dataChildItem[x.key]) : dataChildItem[x.key];
 
       } else {
         propertyValue = ''
         let text;
-        if (x.tags[2] === undefined) text = generateCheckBoxString(generateOption(dataMaster, x.tags[0]), dataChildItem[x.tags[1]])
-        else text = generateCheckBoxString(generateOption(dataMaster, x.tags[0]), dataChildItem[x.tags[1]]) + ' ' + generateCheckBoxString(generateOption(dataMaster, x.tags[2]), dataChildItem[x.tags[3]])
+        if (x.attributes && x.attributes.listitem === undefined) {
+          ;
+          listArr = false;
+          if (x.tags[2] === undefined) text = generateCheckBoxString(generateOption(dataMaster, x.tags[0]), dataChildItem[x.tags[1]])
+          else text = generateCheckBoxString(generateOption(dataMaster, x.tags[0]), dataChildItem[x.tags[1]]) + ' ' + generateCheckBoxString(generateOption(dataMaster, x.tags[2]), dataChildItem[x.tags[3]])
 
-        if (x.attributes && x.attributes.textbefore) {
-          textColumns = x.content + ' ' + text + ' ' + x.attributes.textbefore;
-        } else textColumns = x.content + ' ' + text;
+          if (x.attributes && x.attributes.textbefore) {
+            textColumns = x.content + ' ' + text + ' ' + x.attributes.textbefore;
+          } else textColumns = x.content + ' ' + text;
+
+        } else {
+          listArr = true;
+          if (x.tags[2] === undefined) text = generateCheckBoxArray(generateOptionArray(dataMaster, x.tags[0], x.attributes.first, x.attributes.last), dataChildItem[x.tags[1]])
+          else text = generateCheckBoxArray(generateOptionArray(dataMaster, x.tags[0], x.attributes.first, x.attributes.last), dataChildItem[x.tags[1]]) + ' ' + generateCheckBoxArray(generateOptionArray(dataMaster, x.tags[2], x.attributes.first, x.attributes.last), dataChildItem[x.tags[3]])
+          textColumns = text
+        }
+
       }
+
       if (rawItem.label === _COLUMNS) {
         return convertDataColumns(x, alignment, width, textColumns)
-      } else if (rawItem.type === _TABLE) return convertDataTable(x, dataChildItem, alignment, textColumns, width)
+      } else if (rawItem.type === _TABLE) return convertDataTable(x, dataChildItem, alignment, textColumns, listArr)
 
     })).reduce((prev, next) => {
       return prev.concat(next);

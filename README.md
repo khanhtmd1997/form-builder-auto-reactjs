@@ -36,5 +36,18 @@ tag html: h1 - h6, p
 			** manylist: true
 			** width: 40% (dùng chung cho tất cả nếu muốn fix width)
 			** textbefore: ... (dùng để nối chuỗi ... phía sau data)
+            **đặc biệt + sex: true (dùng để render list giới tính)**
 		+ colspan
 		+ rowspan
+
+        ===
+        + selectbox = true
+        + manylist = true
+        + listitem = true
+        + first 0 (bắt đầu từ vị trí index)
+        + last 3 (kết thúc vị trí index)
+        => dùng để render list item
+        ví dụ list 5 phần tử
+            + first 0, last 3 => render list từ 1-3
+            + first 3 => render 4-5
+        
