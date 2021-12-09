@@ -363,7 +363,7 @@ export default function View(props) {
           else text = generateCheckBoxString(generateOption(dataMaster, x.tags[0]), dataChildItem[x.tags[1]]) + ' ' + generateCheckBoxString(generateOption(dataMaster, x.tags[2]), dataChildItem[x.tags[3]])
 
           if (x.attributes && x.attributes.textbefore) {
-            textColumns = x.content + ' ' + text + ' ' + x.attributes.textbefore;
+            textColumns = text + ' ' + x.attributes.textbefore;
           } else textColumns = x.content + ' ' + text;
 
         } else {
