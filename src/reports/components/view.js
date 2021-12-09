@@ -550,8 +550,8 @@ export default function View(props) {
   useEffect(() => {
     const pdfDefination = buildPDFDefination(dataTableReport);
 
-    const index = pdfDefination.content[0].indexOf(undefined)
-    pdfDefination.content[0].splice(index, 1)
+    // const index = pdfDefination.content[0].indexOf(undefined)
+    // pdfDefination.content[0].splice(index, 1)
     console.log(pdfDefination);
     setPDFData(pdfDefination)
     // eslint-disable-next-line
