@@ -46,6 +46,9 @@ tag html: h1 - h6, p
 
 		+ manytable: true => chia row table lồng table
 
+		- dành cho table:
+		+ widths: 0,0 (phụ thuộc bao nhiêu columns)
+		+ heights: 0,0 (phụ thuộc bao nhiêu rows)
         ===
         + selectbox = true
         + manylist = true

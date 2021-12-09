@@ -151,6 +151,18 @@ export default function View(props) {
     return widths
   }
 
+  //widths table
+  function getHeightsTable(rawItem) {
+    let heights = []
+    if (rawItem.attributes && rawItem.attributes.heights !== undefined) {
+      heights = rawItem.attributes.heights.split(',').map(item => {
+        if (parseInt(item) >= 0) return item = parseInt(item)
+        else return item = '*'
+      });
+    } else heights = []
+    return heights
+  }
+
   //render data cho columns
   function renderDataColumns(rawItem, data, dataChildItem) {
     let columns = []
@@ -180,7 +192,7 @@ export default function View(props) {
     return {
       margin: getMargin(rawItem),
       table: {
-        heights: 10,
+        heights: getHeightsTable(rawItem),
         widths: getWidthsTable(rawItem),
         body: [
           ...header,
