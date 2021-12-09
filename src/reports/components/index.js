@@ -17,7 +17,7 @@ export default function ReportAuto() {
       adlDietaryIntake: '0',
       adlDressingLower: '0',
       adlDressingUpper: '0',
-      bedsoreDateOfOnset: null,
+      bedsoreDateOfOnset: "2021-12-07",
       bedsoreOther: null,
       bedsorePartFreeDescription: "ưerew",
       bedsorePartOther: '1',

@@ -40,6 +40,12 @@ tag html: h1 - h6, p
 		+ colspan
 		+ rowspan
 
+		+ formatdate (convert date '-' thành '/')
+
+		+ pagebreak: after | before (cắt dữ liệu sang trang mới)
+
+		+ manytable: true => chia row table lồng table
+
         ===
         + selectbox = true
         + manylist = true

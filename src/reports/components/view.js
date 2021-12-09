@@ -26,6 +26,7 @@ export default function View(props) {
   const { dataTableReport, dataAPI, dataMaster, isView } = props;
   const [pdfData, setPDFData] = useState({});
 
+  //option giới tính
   const genderOption = [
     {
       label: "男",
@@ -37,21 +38,14 @@ export default function View(props) {
     },
   ];
 
-  // const attributes = {
-  //   margin: '0.5',
-  //   width: '10%',
-  //   selectbox: 'true',
-  //   birthday: 'true',
-  //   sex: 'true'
-  // }
-
+  //tính tuổi
   function calculateAge(dob) {
     var diff_ms = Date.now() - dob.getTime();
     var age_dt = new Date(diff_ms);
-
     return Math.abs(age_dt.getUTCFullYear() - 1970);
   }
 
+  //format date kiểu nhật
   function formatDateJapan(dateStr) {
     if (!dateStr) return "";
 
@@ -69,10 +63,12 @@ export default function View(props) {
     );
   }
 
+  //format date - thành /
   function formatDate(dateStr) {
     return dateStr ? dateStr.replaceAll("-", "/") : "";
   }
 
+  //nối chuỗi checkbox
   function generateCheckBoxString(options, optionSelected) {
     let result = "";
     options.forEach(item => {
@@ -125,6 +121,7 @@ export default function View(props) {
     })
   }
 
+  //return margin
   function getMargin(rawItem) {
     let margin = []
     if (rawItem.attributes && rawItem.attributes.margin !== undefined) {
@@ -133,6 +130,16 @@ export default function View(props) {
     return margin
   }
 
+  //return sang trang
+  function getBreakPage(rawItem) {
+    let pagebreak = ''
+    if (rawItem.attributes && rawItem.attributes.pagebreak !== undefined) {
+      pagebreak = rawItem.attributes.pagebreak
+    } else pagebreak = ''
+    return pagebreak
+  }
+
+  //widths table
   function getWidthsTable(rawItem) {
     let widths = []
     if (rawItem.attributes && rawItem.attributes.widths !== undefined) {
@@ -144,6 +151,7 @@ export default function View(props) {
     return widths
   }
 
+  //render data cho columns
   function renderDataColumns(rawItem, data, dataChildItem) {
     let columns = []
     data.map(item => {
@@ -151,10 +159,12 @@ export default function View(props) {
     })
     return {
       columns: columns,
-      margin: rawItem.margin
+      margin: rawItem.margin,
+      pageBreak: rawItem.pageBreak
     }
   }
 
+  //render data cho table
   function renderTable(data, dataChildItem, rawItem) {
     let header = [];
     let body = [];
@@ -177,6 +187,7 @@ export default function View(props) {
           ...body
         ],
       },
+      pageBreak: getBreakPage(rawItem),
       layout: {
         hLineWidth: function (i, node) {
           return (i === 0 || i === node.table.body.length) ? 2 : 1;
@@ -208,6 +219,7 @@ export default function View(props) {
     }
   }
 
+  //convert data columns
   function convertDataColumns(x, alignment, width, textColumns) {
     let arr = [
       {
@@ -220,7 +232,7 @@ export default function View(props) {
       }]
 
     const unique = arr.filter((v, i, a) => a.findIndex(t => (t.id === v.id && t.name === v.name)) === i)
-    if (unique[1].name === undefined) {
+    if (unique[1] !== undefined && unique[1].name === undefined) {
       unique[1].id = ''
       unique[1].name = ''
     }
@@ -229,11 +241,13 @@ export default function View(props) {
       width,
       alignment,
       textColumns,
+      margin: getMargin(x)
       // propertyValue,
     };
     return result
   }
 
+  //convert data table
   function convertDataTable(x, dataChildItem, alignment, textColumns, listArr) {
     let result = {};
 
@@ -243,7 +257,7 @@ export default function View(props) {
           text: x.content + ' ' + textColumns,
           alignment,
           fontSize: setFontSize(x.tag),
-
+          margin: getMargin(x)
         }
 
       }
@@ -252,6 +266,7 @@ export default function View(props) {
         text: x.content,
         alignment,
         fontSize: setFontSize(x.tag),
+        margin: getMargin(x)
       }
     } else {
       if (dataChildItem[x.key] !== undefined && dataChildItem[x.key] !== null)
@@ -259,11 +274,13 @@ export default function View(props) {
           text: textColumns,
           alignment,
           fontSize: setFontSize(x.tag),
+          margin: getMargin(x)
         }
       else result = {
         text: textColumns,
         alignment,
         fontSize: setFontSize(x.tag),
+        margin: getMargin(x)
       }
     }
 
@@ -303,33 +320,32 @@ export default function View(props) {
     return result
   }
 
+  //switch type data
   function switchDataTable(dataChildItem, rawItem, dataMaster) {
     for (let i = 0; i < rawItem.rows.length; i++) {
       //check content not value => content = ''
       // eslint-disable-next-line
-      rawItem.rows[i]?.map(item => {
+      rawItem.rows[i].map(item => {
         if (item.components.length === 0) item.components.push({ content: '' })
       });
     }
     // eslint-disable-next-line
     const data = rawItem.rows.map(row => row.map(child => Array.from(child.components, x => {
-      let alignment = x.className && x.className.indexOf(_CENTER) > -1 ? _CENTER : x.className && x.className.indexOf(_RIGHT) > -1 ? _RIGHT : _LEFT;
+      let alignment = x.className && x.className.indexOf(_CENTER) > -1 ? _CENTER : x.className && x.className.indexOf(_RIGHT) > -1 ? _RIGHT : x.className && x.className.indexOf('justify') > -1 ? 'justify' : _LEFT;
       let width = (x.attributes && x.attributes.width !== '') ? x.attributes.width : '*';
-      let propertyValue;
       let textColumns;
       let listArr = false;
       if (x.key !== 'listData') {
-        propertyValue = (x.attributes && x.attributes.birthday === 'true') ? formatDateJapan(dataChildItem[x.key]) : dataChildItem[x.key];
+        // propertyValue = (x.attributes && x.attributes.birthday === 'true') ? formatDateJapan(dataChildItem[x.key]) : dataChildItem[x.key];
         textColumns = (x.attributes && x.attributes.selectbox === 'true' && x.attributes.sex === 'true')
-          ? generateCheckBoxString(genderOption, propertyValue) : (x.attributes && x.attributes.birthday === 'true')
+          ? generateCheckBoxString(genderOption, dataChildItem[x.key]) : (x.attributes && x.attributes.birthday === 'true')
             ? formatDateJapan(dataChildItem[x.key]) : (x.attributes && x.attributes.formatdate === 'true')
-              ? formatDate(dataChildItem[x.key]) : dataChildItem[x.key];
+              ? formatDate(dataChildItem[x.key])
+              : (x.attributes && x.attributes.birthday === 'true') ? formatDateJapan(dataChildItem[x.key]) : dataChildItem[x.key];
 
       } else {
-        propertyValue = ''
         let text;
         if (x.attributes && x.attributes.listitem === undefined) {
-          ;
           listArr = false;
           if (x.tags[2] === undefined) text = generateCheckBoxString(generateOption(dataMaster, x.tags[0]), dataChildItem[x.tags[1]])
           else text = generateCheckBoxString(generateOption(dataMaster, x.tags[0]), dataChildItem[x.tags[1]]) + ' ' + generateCheckBoxString(generateOption(dataMaster, x.tags[2]), dataChildItem[x.tags[3]])
@@ -389,25 +405,99 @@ export default function View(props) {
     }
   }
 
+  function setFieldElement(item) {
+    return {
+      text: item.content,
+      alignment: item.className && item.className.indexOf(_CENTER) > -1 ? _CENTER : item.className && item.className.indexOf(_RIGHT) > -1 ? _RIGHT : item.className && item.className.indexOf('justify') > -1 ? 'justify' : _LEFT,
+      margin: getMargin(item),
+      pageBreak: getBreakPage(item),
+    }
+
+
+  }
+
+  function drawManyTable(dataChildItem, rawItem, dataMaster) {
+    const body = rawItem.rows.map((row) => {
+      return row.map((rowItem) => {
+        return rowItem.components?.map((component) => {
+          if (component.rows?.length >= 3) {
+            if (component.rows[0]?.length !== component.rows[2]?.length) {
+              if (component.rows[0]?.length !== component.rows[1]?.length) {
+                component.rows.pop()
+                component.rows.pop()
+              } else component.rows.pop()
+            }
+          }
+
+          if (component.numRows !== component.rows?.length) {
+            component.rows.pop()
+          }
+          if (component.type === _HTMLELEMENT) {
+            let rawElement = setFieldElement(component)
+            return switchHtmlElement(dataChildItem, rawElement, dataMaster);
+          }
+          else return switchDataTable(dataChildItem, component, dataMaster);
+        })
+      })
+    });
+
+    return {
+      table: {
+        body,
+        widths: getWidthsTable(rawItem),
+      },
+      layout: {
+        hLineWidth: function (i, node) {
+          return (i === 0 || i === node.table.body.length) ? 2 : 1;
+        },
+        vLineWidth: function (i, node) {
+          return (i === 0 || i === node.table.widths.length) ? 2 : 1;
+        },
+        hLineColor: function (i, node) {
+          return 'white';
+        },
+        vLineColor: function (i, node) {
+          return 'white';
+        },
+        hLineStyle: function (i, node) {
+          if (i === 0 || i === node.table.body.length) {
+            return null;
+          }
+          //dọc
+          return { dash: { length: 1, space: 4 } };
+        },
+        vLineStyle: function (i, node) {
+          if (i === 0 || i === node.table.widths.length) {
+            return null;
+          }
+          //ngang
+          return { dash: { length: 4 } };
+        },
+      }
+    }
+  }
+
   function renderDataSwitch(dataChildItem, rawItem, dataMaster) {
     let type = rawItem.type;
     switch (type) {
       case _HTMLELEMENT:
-        let rawElement = {
-          text: rawItem.content,
-          alignment: rawItem.className.indexOf(_CENTER) > -1 ? _CENTER : rawItem.className.indexOf(_RIGHT) > -1 ? _RIGHT : _LEFT,
-          margin: getMargin(rawItem)
-        }
+        let rawElement = setFieldElement(rawItem)
+
         return switchHtmlElement(dataChildItem, rawElement, dataMaster)
       case _COLUMNS:
         const dataItem = {
           rows: [],
           label: _COLUMNS,
-          margin: getMargin(rawItem)
+          margin: getMargin(rawItem),
+          pageBreak: getBreakPage(rawItem),
         }
+
         dataItem.rows.push(rawItem.columns)
         return switchDataTable(dataChildItem, dataItem, dataMaster)
       case _TABLE:
+        if (rawItem.attributes && rawItem.attributes.manytable !== undefined) {
+          return drawManyTable(dataChildItem, rawItem, dataMaster)
+        }
         return switchDataTable(dataChildItem, rawItem, dataMaster)
       default:
         break;
