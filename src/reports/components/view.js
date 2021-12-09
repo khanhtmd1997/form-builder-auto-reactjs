@@ -15,6 +15,7 @@ import {
   _TAGH3,
   _TAGH4,
   _TAGH5,
+  _TAGH6,
   _TAGHP,
   _TITLETABLE,
   // _TRUESTRING
@@ -397,8 +398,8 @@ export default function View(props) {
     else if (tag === _TAGH3) fontSize = 18.72
     else if (tag === _TAGH4 || tag === _TAGHP) fontSize = 16
     else if (tag === _TAGH5) fontSize = 13.28
-    else fontSize = 8;
-
+    else if (tag === _TAGH6) fontSize = 8;
+    else fontSize = 7
     return fontSize
   }
 
