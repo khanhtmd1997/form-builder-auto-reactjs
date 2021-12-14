@@ -292,7 +292,8 @@ function View(props) {
       width,
       alignment,
       textColumns,
-      margin: getMargin(x)
+      margin: getMargin(x),
+      fontSize: setFontSize(x.tag)
       // propertyValue,
     };
     return result
@@ -467,7 +468,7 @@ function View(props) {
       text: rawItem.text,
       alignment: rawItem.alignment,
       width: rawItem.width,
-      fontSize: setFontSize(rawItem.tag),
+      fontSize: rawItem.fontSize,
       margin: rawItem.margin,
       // fontSize: rawItem.fontSize,
       sourceTable: rawItem.sourceTable
