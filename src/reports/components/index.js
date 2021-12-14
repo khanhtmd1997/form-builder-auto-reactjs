@@ -22,7 +22,7 @@ function ReportAuto() {
   const dataMasterDefault = localStorage.getItem('dataMasterDefault')
   const valueDataDefault = localStorage.getItem('valueDataDefault')
 
-  const [add, setAdd] = useState(true)
+  const [, setAdd] = useState(true)
   const [valueForm, setValueForm] = useState(valueDefault !== null && valueDefault !== 'null' ? parseInt(valueDefault) : 1);
   const [dataForm,] = useState(form);
   const [formData, setFormData] = useState(localForm ? JSON.parse(localForm) : formIoData);
@@ -77,6 +77,56 @@ function ReportAuto() {
       riyousyaGender: 1,
       riyousyaId: 270,
       riyousyaName: "あああ",
+      sid: 59,
+      sizeEvaluation: null,
+      skinCare: null,
+      tantoFurigana: "ナカモトミネコ",
+      tantoId: 34,
+      tantoName: "中本　峰子",
+    },
+    {
+      adlBathe: '0',
+      adlDietaryIntake: '0',
+      adlDressingLower: '0',
+      adlDressingUpper: '0',
+      bedsoreDateOfOnset: "2021-12-14",
+      bedsoreOther: null,
+      bedsorePartFreeDescription: "wwwwwww",
+      bedsorePartOther: '1',
+      dailyDegree: 'J1',
+      depthEvaluation: null,
+      evaluationInterval: null,
+      granulationEvaluation: null,
+      haisetuBalloonCatheter: null,
+      haisetuDefecationIncontinence: null,
+      haisetuUrinationIncontinence: null,
+      hyoukaDate: "2021-12-14",
+      id: 31,
+      improvedNutrition: null,
+      infectionEvaluation: null,
+      isBedsore: "1",
+      isBedsoreWithinThreeMonths: null,
+      isPastBedsore: "1",
+      kakuteif: 0,
+      kihonKeepStanding: null,
+      kihonSittingContinuous: null,
+      kihonTransfer: null,
+      kihonTurningOver: '0',
+      leachateEvaluation: null,
+      makeDate: "2021-12-14",
+      mattersRelatedJobs: null,
+      necroticTissueEvaluation: null,
+      pastBedsorePart: "",
+      pastBedsorePartFreeDescription: null,
+      pocketSizeEvaluation: null,
+      rehabilitation: null,
+      removedPressureOnBed: null,
+      removedPressureOnChair: null,
+      riyousyaBirthDay: "1948-09-05",
+      riyousyaFurigana: "アアア",
+      riyousyaGender: 0,
+      riyousyaId: 270,
+      riyousyaName: "小畑 ための",
       sid: 59,
       sizeEvaluation: null,
       skinCare: null,
@@ -214,7 +264,7 @@ function ReportAuto() {
     else setGetData(defaultData)
   }
 
-  const printResult = () => {
+  const saveForm = () => {
     if (formData.components[0].class === 'notDisplay' && formData.components.length === 1) setIsView(false)
     else setIsView(true)
 
@@ -233,38 +283,20 @@ function ReportAuto() {
   localStorage.setItem('dataMasterDefault', JSON.stringify(getDataMaster))
   localStorage.setItem('valueDataDefault', getValue)
 
-  // const width = window.innerWidth;
   return (
-    // <Modal
-    //     visible={props.viewReport}
-    //     closable={false}
-    //     onOk={props.closeReport}
-    //     onCancel={props.closeReport}
-    //     footer={[
-    //         <Button key="back" onClick={props.closeReport}>Close</Button>,
-    //         <Button
-    //             key="submit"
-    //             type="primary"
-    //             onClick={props.closeReport}
-    //         >
-    //             OK
-    //         </Button>,
-    //     ]}
-    //     width={1920}
-    // >
     <div className="App">
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px', marginTop: '16px', alignItems: 'center' }}>
-        <div style={{ flex: '0 0 6%' }}>Choice data</div>
+        <div style={{ flex: '0 0 6%' }}>データ選択</div>
         <div style={{ flex: '0 0 15%' }} onChange={changeData}>
-          <Select placeholder="Choice data" defaultValue={getValue.toString()} value={getValue.toString()} onChange={changeData} style={{ width: "250px" }}>
-            <Option value="1">Data default</Option>
-            <Option value="2">Data table default</Option>
-            <Option value="3">Data table screening care plan</Option>
+          <Select placeholder="Choice data" defaultValue={getValue.toString()} value={getValue.toString()} onChange={changeData} style={{ width: "300px" }}>
+            <Option value="1">既定のデータ</Option>
+            <Option value="2">既定のテーブルのデータ</Option>
+            <Option value="3">スクリーニング・ケア計画のテーブルのデータ</Option>
           </Select>
         </div>
-        <div style={{ flex: '0 0 6%' }}>Choice form</div>
+        <div style={{ flex: '0 0 6%' }}>帳票選択</div>
         <div style={{ flex: '0 0 15%' }}>
-          <Select defaultValue={valueForm} value={valueForm} onChange={changeForm} style={{ width: "250px" }}>
+          <Select defaultValue={valueForm} value={valueForm} onChange={changeForm} style={{ width: "300px" }}>
             {
               dataForm && dataForm.length > 0 ?
                 dataForm.map((item, index) => {
@@ -277,10 +309,10 @@ function ReportAuto() {
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
         <div style={{ flex: '0 0 10%' }}>
-          <Button className="btn-primary" type="success" onClick={addReport}>Add Report Form</Button>
+          <Button className="btn-primary" type="success" onClick={addReport}>帳票フォーム追加</Button>
         </div>
-        <Button type="primary" onClick={printResult} style={{ marginRight: '24px' }}>
-          Save Report Form
+        <Button type="primary" onClick={saveForm} style={{ marginRight: '24px' }}>
+          帳票フォーム保存
         </Button>
         <View dataTableReport={result} dataAPI={getData && getData.length > 0 ? getData : []} dataMaster={getDataMaster} isView={isView} />
       </div>
@@ -301,32 +333,7 @@ function ReportAuto() {
         </div>
       </div>
     </div>
-    // <div>dfuwoiruewoiruewoiruewoiruewoiruewio</div>
-
   );
 }
 
 export default ReportAuto;
-// const mapStateToProps = (state) => {
-//     return {
-//         tantoList: state.tantoMaster.data,
-//         jokusoPlanList: state.jokusoPlan.jokusoPlanList,
-//         lifeYougoNaiyou: state.jokusoPlan.lifeYougoNaiyou,
-//         loading: state.jokusoPlan.loading,
-//     };
-// };
-
-// const mapDispatchToProps = (dispatch) => {
-//     return {
-//         loadTantoMaster: () => dispatch(TantoMasterActions.getBySid()),
-//         kobetsuCopy: (fromDate, toDate, createDate, createTantoId, fromDateCheck, toDateCheck, callback) => dispatch(LifeActions.kobetsuCopy(fromDate, toDate, createDate, createTantoId, fromDateCheck, toDateCheck, callback)),
-//         jokusoPlanCopy: (fromDate, toDate, createDate, createTantoId, fromDateCheck, toDateCheck, callback) => dispatch(LifeActions.jokusoPlanCopy(fromDate, toDate, createDate, createTantoId, fromDateCheck, toDateCheck, callback)),
-//         exportData: (fromDate, toDate, callback) => dispatch(LifeActions.exportData(fromDate, toDate, callback)),
-//         downloadCsv: (type) => dispatch(LifeActions.downloadCsv(type)),
-//         getJokusoPlanByIds: (data) => dispatch(JokusoPlan.getJokusoPlanByIds(data)),
-//         getLifeYougoMaster: () => dispatch(JokusoPlan.getLifeYougoMaster()),
-//     };
-// };
-// const ReportAutoContainer = connect(mapStateToProps, mapDispatchToProps)(ReportAuto);
-
-// export { ReportAutoContainer as ReportAuto };

@@ -693,7 +693,7 @@ function View(props) {
   return (
     <div>
       {
-        isView ? <Button type='danger' onClick={() => onClickPdfMakeHandler(pdfData)} >View File PDF</Button>
+        isView ? <Button type='danger' onClick={() => onClickPdfMakeHandler(pdfData)} >PDFファイル閲覧</Button>
           : null
       }
     </div>

@@ -208,3 +208,8 @@ button {
 .right {
     text-align: right;
 }
+
+
+.formio-component-submit {
+    display: none;
+}
