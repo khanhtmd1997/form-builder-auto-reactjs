@@ -1,16 +1,38 @@
 
+
 import React, { useState } from "react";
 import { FormBuilder as FormBuilderIo, Formio } from "react-formio";
-import '../assets/css/index.css';
-import 'bootstrap/dist/css/bootstrap.min.css'
-import View from "./view";
-import { formIoData } from "../core/data";
 
-export default function ReportAuto() {
+import 'bootstrap/dist/css/bootstrap.min.css'
+import '../assets/css/index.css';
+import "formiojs/dist/formio.full.css";
+import 'antd/dist/antd.css';
+import View from "./view";
+import { formIoData, form } from "../core/data";
+import { Button, Select } from "antd";
+
+const { Option } = Select
+const defaultData = [
+  { id: 1, name: '' }
+]
+function ReportAuto() {
   const localForm = localStorage.getItem('form')
+  const valueDefault = localStorage.getItem('defaultForm')
+  const dataDefault = localStorage.getItem('dataDefault')
+  const dataMasterDefault = localStorage.getItem('dataMasterDefault')
+  const valueDataDefault = localStorage.getItem('valueDataDefault')
+
+  const [add, setAdd] = useState(true)
+  const [valueForm, setValueForm] = useState(valueDefault !== null && valueDefault !== 'null' ? parseInt(valueDefault) : 1);
+  const [dataForm,] = useState(form);
   const [formData, setFormData] = useState(localForm ? JSON.parse(localForm) : formIoData);
   const [result, setResult] = useState([])
-  const [isView, setIsView] = useState(false)
+  const [isView, setIsView] = useState(false);
+  const [getValue, setGetValue] = useState(valueDataDefault ? valueDataDefault : 1);
+  const [getData, setGetData] = useState(dataDefault ? JSON.parse(dataDefault) : defaultData)
+  const [getDataMaster, setGetDataMaster] = useState(dataMasterDefault ? JSON.parse(dataMasterDefault) : [])
+  // const []
+
   const data = [
     {
       adlBathe: '0',
@@ -61,58 +83,10 @@ export default function ReportAuto() {
       tantoFurigana: "ナカモトミネコ",
       tantoId: 34,
       tantoName: "中本　峰子",
-    },
-    {
-      adlBathe: '0',
-      adlDietaryIntake: '0',
-      adlDressingLower: '0',
-      adlDressingUpper: '0',
-      bedsoreDateOfOnset: "2021-12-07",
-      bedsoreOther: null,
-      bedsorePartFreeDescription: "ưerew",
-      bedsorePartOther: '1',
-      dailyDegree: 'J1',
-      depthEvaluation: null,
-      evaluationInterval: null,
-      granulationEvaluation: null,
-      haisetuBalloonCatheter: null,
-      haisetuDefecationIncontinence: null,
-      haisetuUrinationIncontinence: null,
-      hyoukaDate: "2021-12-07",
-      id: 31,
-      improvedNutrition: null,
-      infectionEvaluation: null,
-      isBedsore: "1",
-      isBedsoreWithinThreeMonths: null,
-      isPastBedsore: "1",
-      kakuteif: 0,
-      kihonKeepStanding: null,
-      kihonSittingContinuous: null,
-      kihonTransfer: null,
-      kihonTurningOver: '0',
-      leachateEvaluation: null,
-      makeDate: "2021-12-07",
-      mattersRelatedJobs: null,
-      necroticTissueEvaluation: null,
-      pastBedsorePart: "",
-      pastBedsorePartFreeDescription: null,
-      pocketSizeEvaluation: null,
-      rehabilitation: null,
-      removedPressureOnBed: null,
-      removedPressureOnChair: null,
-      riyousyaBirthDay: "1946-08-06",
-      riyousyaFurigana: "アアア",
-      riyousyaGender: 1,
-      riyousyaId: 270,
-      riyousyaName: "あああ",
-      sid: 59,
-      sizeEvaluation: null,
-      skinCare: null,
-      tantoFurigana: "ナカモトミネコ",
-      tantoId: 34,
-      tantoName: "中本　峰子",
     }
   ]
+
+
 
   const dataMaster = [
     {
@@ -138,6 +112,108 @@ export default function ReportAuto() {
     }
 
   ]
+
+  const dataTable = [
+    {
+      id: 1,
+      date: 'H29.6.1',
+      userName: '小畑ための',
+      content: '良眠',
+      manager: '福島彩花 ',
+    },
+    {
+      id: 2,
+      date: 'H29.6.1 02:00',
+      userName: '小畑ための',
+      content: '良眠',
+      manager: '福島彩花 ',
+    },
+    {
+      id: 3,
+      date: 'H29.6.1 04:00',
+      userName: '小畑ための',
+      content: '良眠',
+      manager: '福島彩花 ',
+    },
+    {
+      id: 4,
+      date: 'H29.6.1 05:30',
+      userName: '小畑ための',
+      content: 'KT36.2 P71 BP167/67',
+      manager: '福島彩花 ',
+    },
+    {
+      id: 5,
+      date: 'H29.6.1 06:30',
+      userName: '小畑ための',
+      content: 'KT36.2 P71 BP167/67',
+      manager: '福島彩花 ',
+    },
+    {
+      id: 6,
+      date: 'H29.6.1 06:30',
+      userName: '小畑ための',
+      content: '',
+      manager: '福島彩花 ',
+    },
+    {
+      id: 7,
+      date: 'H29.6.1 06:30',
+      userName: '小畑ための',
+      content: '',
+      manager: '福島彩花 ',
+    },
+    {
+      id: 8,
+      date: 'H29.6.1 07:00',
+      userName: '小畑ための',
+      content: 'ポカリ(200) ',
+      manager: '福島彩花 ',
+    },
+    {
+      id: 9,
+      date: 'H29.6.1 07:00',
+      userName: '小畑ための',
+      content: 'トイレ(+)',
+      manager: '福島彩花 ',
+    },
+    {
+      id: 10,
+      date: 'H29.6.1 07:00',
+      userName: '小畑ための',
+      content: '朝(7/5)',
+      manager: '福島彩花 ',
+    }
+  ]
+
+  function changeForm(value) {
+    setValueForm(value)
+    // eslint-disable-next-line
+    dataForm.map(item => {
+      if (value === item.id) setFormData(JSON.parse(item.dataJson))
+    })
+
+    setIsView(false)
+  }
+
+  function addReport() {
+    setAdd(true)
+    setValueForm(1)
+    setFormData(formIoData)
+    setGetValue(1)
+    setGetData(defaultData)
+  }
+
+  function changeData(value) {
+    setGetValue(value)
+    if (parseInt(value) === 2) setGetData(dataTable)
+    else if (parseInt(value) === 3) {
+      setGetDataMaster(dataMaster)
+      setGetData(data)
+    }
+    else setGetData(defaultData)
+  }
+
   const printResult = () => {
     if (formData.components[0].class === 'notDisplay' && formData.components.length === 1) setIsView(false)
     else setIsView(true)
@@ -152,14 +228,61 @@ export default function ReportAuto() {
     });
   };
   localStorage.setItem('form', JSON.stringify(formData))
+  localStorage.setItem('defaultForm', valueForm)
+  localStorage.setItem('dataDefault', JSON.stringify(getData))
+  localStorage.setItem('dataMasterDefault', JSON.stringify(getDataMaster))
+  localStorage.setItem('valueDataDefault', getValue)
+
+  // const width = window.innerWidth;
   return (
+    // <Modal
+    //     visible={props.viewReport}
+    //     closable={false}
+    //     onOk={props.closeReport}
+    //     onCancel={props.closeReport}
+    //     footer={[
+    //         <Button key="back" onClick={props.closeReport}>Close</Button>,
+    //         <Button
+    //             key="submit"
+    //             type="primary"
+    //             onClick={props.closeReport}
+    //         >
+    //             OK
+    //         </Button>,
+    //     ]}
+    //     width={1920}
+    // >
     <div className="App">
-      <h2>Form builder playground: NGUYỄN VĂN KHÁNH</h2>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <button className="green" onClick={printResult} style={{ marginRight: '20px' }}>
-          Save Form
-        </button>
-        <View dataTableReport={result} dataAPI={data && data.length > 0 ? data : data === []} dataMaster={dataMaster} isView={isView} />
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px', marginTop: '16px', alignItems: 'center' }}>
+        <div style={{ flex: '0 0 6%' }}>Choice data</div>
+        <div style={{ flex: '0 0 15%' }} onChange={changeData}>
+          <Select placeholder="Choice data" defaultValue={getValue.toString()} value={getValue.toString()} onChange={changeData} style={{ width: "250px" }}>
+            <Option value="1">Data default</Option>
+            <Option value="2">Data table default</Option>
+            <Option value="3">Data table screening care plan</Option>
+          </Select>
+        </div>
+        <div style={{ flex: '0 0 6%' }}>Choice form</div>
+        <div style={{ flex: '0 0 15%' }}>
+          <Select defaultValue={valueForm} value={valueForm} onChange={changeForm} style={{ width: "250px" }}>
+            {
+              dataForm && dataForm.length > 0 ?
+                dataForm.map((item, index) => {
+                  return <Option value={item.id} key={index}>{item.name}</Option>
+                }) : null
+            }
+          </Select>
+        </div>
+
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+        <div style={{ flex: '0 0 10%' }}>
+          <Button className="btn-primary" type="success" onClick={addReport}>Add Report Form</Button>
+        </div>
+        <Button type="primary" onClick={printResult} style={{ marginRight: '24px' }}>
+          Save Report Form
+        </Button>
+        <View dataTableReport={result} dataAPI={getData && getData.length > 0 ? getData : []} dataMaster={getDataMaster} isView={isView} />
       </div>
       <div>
         <FormBuilderIo
@@ -178,5 +301,32 @@ export default function ReportAuto() {
         </div>
       </div>
     </div>
+    // <div>dfuwoiruewoiruewoiruewoiruewoiruewio</div>
+
   );
 }
+
+export default ReportAuto;
+// const mapStateToProps = (state) => {
+//     return {
+//         tantoList: state.tantoMaster.data,
+//         jokusoPlanList: state.jokusoPlan.jokusoPlanList,
+//         lifeYougoNaiyou: state.jokusoPlan.lifeYougoNaiyou,
+//         loading: state.jokusoPlan.loading,
+//     };
+// };
+
+// const mapDispatchToProps = (dispatch) => {
+//     return {
+//         loadTantoMaster: () => dispatch(TantoMasterActions.getBySid()),
+//         kobetsuCopy: (fromDate, toDate, createDate, createTantoId, fromDateCheck, toDateCheck, callback) => dispatch(LifeActions.kobetsuCopy(fromDate, toDate, createDate, createTantoId, fromDateCheck, toDateCheck, callback)),
+//         jokusoPlanCopy: (fromDate, toDate, createDate, createTantoId, fromDateCheck, toDateCheck, callback) => dispatch(LifeActions.jokusoPlanCopy(fromDate, toDate, createDate, createTantoId, fromDateCheck, toDateCheck, callback)),
+//         exportData: (fromDate, toDate, callback) => dispatch(LifeActions.exportData(fromDate, toDate, callback)),
+//         downloadCsv: (type) => dispatch(LifeActions.downloadCsv(type)),
+//         getJokusoPlanByIds: (data) => dispatch(JokusoPlan.getJokusoPlanByIds(data)),
+//         getLifeYougoMaster: () => dispatch(JokusoPlan.getLifeYougoMaster()),
+//     };
+// };
+// const ReportAutoContainer = connect(mapStateToProps, mapDispatchToProps)(ReportAuto);
+
+// export { ReportAutoContainer as ReportAuto };

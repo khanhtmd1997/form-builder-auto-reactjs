@@ -1,6 +1,7 @@
+import { Button } from 'antd';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   _CENTER,
   _COLUMNS,
@@ -19,11 +20,10 @@ import {
   _TAGHP,
   _TITLETABLE,
   // _TRUESTRING
-} from '../contants/index';
+} from '../contants';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
-export default function View(props) {
+function View(props) {
   const { dataTableReport, dataAPI, dataMaster, isView } = props;
   const [pdfData, setPDFData] = useState({});
 
@@ -152,6 +152,28 @@ export default function View(props) {
     return widths
   }
 
+  //border table
+  function getBorderTableRow(rawItem) {
+    let border = []
+    if (rawItem.attributes && rawItem.attributes.border !== undefined) {
+      border = rawItem.attributes.border.split(',').map(item => {
+        if (item === 'true') return item = true
+        else return item = false
+      });
+    } else border = []
+    return border
+  }
+
+  //render check html have sourceTable
+  function getSourceTable(rawItem) {
+    let sourceTable = false
+    if (rawItem.attributes && rawItem.attributes.sourcetable !== undefined) {
+      sourceTable = true
+    } else sourceTable = false
+    return sourceTable
+  }
+
+
   //widths table
   function getHeightsTable(rawItem) {
     let heights = []
@@ -189,47 +211,63 @@ export default function View(props) {
         body.push(data[i])
       }
     }
-
-    return {
-      margin: getMargin(rawItem),
-      table: {
-        heights: getHeightsTable(rawItem),
-        widths: getWidthsTable(rawItem),
-        body: [
-          ...header,
-          ...body
-        ],
+    const layout = {
+      hLineWidth: function (i, node) {
+        return (i === 0 || i === node.table.body.length) ? 2 : 1;
       },
-      pageBreak: getBreakPage(rawItem),
-      layout: {
-        hLineWidth: function (i, node) {
-          return (i === 0 || i === node.table.body.length) ? 2 : 1;
+      vLineWidth: function (i, node) {
+        return (i === 0 || i === node.table.widths.length) ? 2 : 1;
+      },
+      hLineColor: function (i, node) {
+        return rawItem.customClass === _HIDEBORDER ? 'white' : 'black';
+      },
+      vLineColor: function (i, node) {
+        return rawItem.customClass === 'hideborder' ? 'white' : 'black';
+      },
+      // hLineStyle: function (i, node) {
+      //   if (i === 0 || i === node.table.body.length) {
+      //     return null;
+      //   }
+      //   //dọc
+      //   return { dash: { length: 1, space: 1 } };
+      // },
+      // vLineStyle: function (i, node) {
+      //   if (i === 0 || i === node.table.widths.length) {
+      //     return null;
+      //   }
+      //   //ngang
+      //   return { dash: { length: 1 } };
+      // },
+    }
+    if (body === []) {
+      return {
+        margin: getMargin(rawItem),
+        table: {
+          heights: getHeightsTable(rawItem),
+          widths: getWidthsTable(rawItem),
+          body: [
+            ...header,
+          ],
         },
-        vLineWidth: function (i, node) {
-          return (i === 0 || i === node.table.widths.length) ? 2 : 1;
+        pageBreak: getBreakPage(rawItem),
+        layout,
+      }
+    } else {
+      return {
+        margin: getMargin(rawItem),
+        table: {
+          heights: getHeightsTable(rawItem),
+          widths: getWidthsTable(rawItem),
+          body: [
+            ...header,
+            ...body
+          ],
         },
-        hLineColor: function (i, node) {
-          return rawItem.customClass === _HIDEBORDER ? 'white' : 'black';
-        },
-        vLineColor: function (i, node) {
-          return rawItem.customClass === 'hideborder' ? 'white' : 'black';
-        },
-        // hLineStyle: function (i, node) {
-        //   if (i === 0 || i === node.table.body.length) {
-        //     return null;
-        //   }
-        //   //dọc
-        //   return { dash: { length: 1, space: 1 } };
-        // },
-        // vLineStyle: function (i, node) {
-        //   if (i === 0 || i === node.table.widths.length) {
-        //     return null;
-        //   }
-        //   //ngang
-        //   return { dash: { length: 1 } };
-        // },
+        pageBreak: getBreakPage(rawItem),
+        layout,
       }
     }
+
   }
 
   //convert data columns
@@ -330,6 +368,26 @@ export default function View(props) {
       }
     }
 
+    if (x.attributes && x.attributes.hideborder !== undefined) {
+      result = {
+        ...result,
+        border: [false, false, false, false]
+      }
+    }
+
+    if (x.attributes && x.attributes.borderbottom !== undefined) {
+      result = {
+        ...result,
+        border: [false, false, false, true]
+      }
+    }
+
+    if (x.attributes && x.attributes.border !== undefined) {
+      result = {
+        ...result,
+        border: getBorderTableRow(x)
+      }
+    }
     return result
   }
 
@@ -383,6 +441,7 @@ export default function View(props) {
     })).reduce((prev, next) => {
       return prev.concat(next);
     }))
+
     if (rawItem.label === _COLUMNS) {
       return renderDataColumns(rawItem, data[0], dataChildItem)
     } else if (rawItem.type === _TABLE) {
@@ -404,17 +463,14 @@ export default function View(props) {
   }
 
   function switchHtmlElement(dataChildItem, rawItem, dataMaster) {
-    const fontSize = setFontSize(rawItem.tag)
-    let style = {
-      fontSize: fontSize,
-    }
-
     return {
       text: rawItem.text,
       alignment: rawItem.alignment,
       width: rawItem.width,
-      ...style,
-      margin: rawItem.margin
+      fontSize: setFontSize(rawItem.tag),
+      margin: rawItem.margin,
+      // fontSize: rawItem.fontSize,
+      sourceTable: rawItem.sourceTable
     }
   }
 
@@ -424,6 +480,8 @@ export default function View(props) {
       alignment: item.className && item.className.indexOf(_CENTER) > -1 ? _CENTER : item.className && item.className.indexOf(_RIGHT) > -1 ? _RIGHT : item.className && item.className.indexOf('justify') > -1 ? 'justify' : _LEFT,
       margin: getMargin(item),
       pageBreak: getBreakPage(item),
+      fontSize: setFontSize(item.tag),
+      sourceTable: getSourceTable(item)
     }
 
 
@@ -432,17 +490,17 @@ export default function View(props) {
   function drawManyTable(dataChildItem, rawItem, dataMaster) {
     const body = rawItem.rows.map((row) => {
       return row.map((rowItem) => {
-        return rowItem.components?.map((component) => {
-          if (component.rows?.length >= 3) {
-            if (component.rows[0]?.length !== component.rows[2]?.length) {
-              if (component.rows[0]?.length !== component.rows[1]?.length) {
+        return rowItem.components && rowItem.components.map((component) => {
+          if (component.rows && component.rows.length >= 3) {
+            if (component.rows[0].length !== component.rows[2].length) {
+              if (component.rows[0].length !== component.rows[1].length) {
                 component.rows.pop()
                 component.rows.pop()
               } else component.rows.pop()
             }
           }
 
-          if (component.numRows !== component.rows?.length) {
+          if (component.rows && component.numRows !== component.rows.length) {
             component.rows.pop()
           }
           if (component.type === _HTMLELEMENT) {
@@ -453,12 +511,12 @@ export default function View(props) {
         })
       })
     });
-
     return {
       table: {
         body,
         widths: getWidthsTable(rawItem),
       },
+      pageBreak: getBreakPage(rawItem),
       layout: {
         hLineWidth: function (i, node) {
           return (i === 0 || i === node.table.body.length) ? 2 : 1;
@@ -495,7 +553,6 @@ export default function View(props) {
     switch (type) {
       case _HTMLELEMENT:
         let rawElement = setFieldElement(rawItem)
-
         return switchHtmlElement(dataChildItem, rawElement, dataMaster)
       case _COLUMNS:
         const dataItem = {
@@ -523,11 +580,54 @@ export default function View(props) {
 
   function drawContent(dataChildItem, rawData, dataMaster) {
     // eslint-disable-next-line
-    return rawData.map((rawItem) => {
+    return rawData.map((rawItem, index) => {
       return drawTable(dataChildItem, rawItem, dataMaster);
     });
   }
 
+
+  function sourceTable(rawData) {
+    let header = [];
+    let dataAfterConvert = [];
+    let data = dataAPI;
+
+    // eslint-disable-next-line
+    rawData.map((rawItem) => {
+      if (rawItem.attributes && rawItem.attributes.source !== undefined) {
+        if (rawItem.rows.length > 0) {
+          // eslint-disable-next-line
+          rawItem.rows[0].map(item => {
+            // eslint-disable-next-line
+            (item.components || []).map(el => {
+              header.push({
+                value: el.key,
+                content: el.content || '',
+              })
+            })
+
+          })
+          rawItem.rows.splice(0, 1)
+        }
+
+        // eslint-disable-next-line
+        let mappedHeader = header.map(item => ({ [item.value]: item.content }));
+        let newObjectHeader = Object.assign({}, ...mappedHeader);
+        dataAfterConvert = [newObjectHeader, ...dataAPI]
+        data = dataAfterConvert;
+      }
+    })
+    // eslint-disable-next-line
+    return data.map(dataChildItem => drawContent(dataChildItem, rawData, dataMaster[0]))
+  }
+
+  function checkSouceTable(rawData) {
+    let result = false
+    // eslint-disable-next-line
+    rawData.map((rawItem) => {
+      if (rawItem.attributes && rawItem.attributes.source !== undefined) result = true;
+    })
+    return result
+  }
 
   function buildPDFDefination(rawData) {
     pdfMake.fonts = {
@@ -539,20 +639,48 @@ export default function View(props) {
       }
     };
     let dd = {
-      content: dataAPI.map(dataChildItem => drawContent(dataChildItem, rawData, dataMaster[0])),
+      content: sourceTable(rawData),
+      // dataAPI.map(dataChildItem => drawContent(dataChildItem, rawData, dataMaster[0])),
       defaultStyle: {
         font: 'ipagp'
-      }
+      },
+      sourceTable: checkSouceTable(rawData)
     }
     return dd;
   }
 
   useEffect(() => {
     const pdfDefination = buildPDFDefination(dataTableReport);
-
+    // eslint-disable-next-line
+    pdfDefination.content.map((item, index) => {
+      if (item === undefined) pdfDefination.content.splice(index, 1)
+      if (item && item.length > 0) {
+        // eslint-disable-next-line
+        item.map((el, ind) => {
+          if (el && el.sourceTable === true && index >= 1) {
+            delete item[ind]
+          }
+          else if (el === undefined) item.splice(ind, 1)
+          else {
+            if (el.table) {
+              // eslint-disable-next-line
+              el.table.body[0].map(table => {
+                if (table.border === undefined) {
+                  if (index < (pdfDefination.content.length - 1)) {
+                    table.border = [true, true, true, false]
+                  } else {
+                    table.border = [true, true, true, true]
+                  }
+                }
+              })
+            }
+          }
+        })
+      }
+    })
     // const index = pdfDefination.content[0].indexOf(undefined)
     // pdfDefination.content[0].splice(index, 1)
-    console.log(pdfDefination);
+    console.log('content', pdfDefination);
     setPDFData(pdfDefination)
     // eslint-disable-next-line
   }, [dataTableReport])
@@ -564,10 +692,13 @@ export default function View(props) {
   return (
     <div>
       {
-        isView ? <button onClick={() => onClickPdfMakeHandler(pdfData)} >View PDF</button>
+        isView ? <Button type='danger' onClick={() => onClickPdfMakeHandler(pdfData)} >View File PDF</Button>
           : null
       }
     </div>
 
   )
 }
+
+
+export default View

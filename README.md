@@ -46,6 +46,12 @@ tag html: h1 - h6, p
 
 		+ manytable: true => chia row table lồng table
 
+		+ border : true, true, true ,true (dành cho table)
+
+		+ source: (convert data) và đổ data vào table 
+			- 1 row đầu dành cho header và 1 row truyền api (property name)
+		+ sourcetable: true (dành cho các element title của table)
+
 		- dành cho table:
 		+ widths: 0,0 (phụ thuộc bao nhiêu columns)
 		+ heights: 0,0 (phụ thuộc bao nhiêu rows)

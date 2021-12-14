@@ -374,7 +374,6 @@ export default function ViewPDF(props) {
   }
 
   function drawTable(rawData) {
-    console.log(rawData);
     const body = rawData.rows.map((row) => {
       return row.map((rowItem) => {
         return rowItem.components?.map((component) => {
