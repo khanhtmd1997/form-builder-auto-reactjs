@@ -6,6 +6,7 @@
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "antd": "^4.17.3",
     "bootstrap": "^5.1.3",
     "pdfmake": "^0.2.4",
     "react": "^17.0.2",
@@ -18,7 +19,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "pdfmake-font": "cd src/fonts && node build-vfs.js examples/fonts"
   },
   "eslintConfig": {
     "extends": [

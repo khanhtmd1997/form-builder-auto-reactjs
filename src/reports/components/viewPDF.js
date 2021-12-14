@@ -24,7 +24,9 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 export default function ViewPDF(props) {
 
   const { dataTableReport, dataAPI, isView } = props;
-
+  const widthColumns = [
+    'width5', 'width10', 'width15', 'width20', 'width25', 'width30', 'width35', 'width40', 'width45', 'width50',
+  ]
   //convert pdf table
   function pdfTable(dataTable) {
     //
@@ -44,68 +46,75 @@ export default function ViewPDF(props) {
       let result = {}
       // eslint-disable-next-line
       dataAPI.map(item => {
-        if (x.tags.length > 0) {
-          let property = x.tags[0];
-          if (x.content !== '') {
-            if (item[x.key] !== undefined && item[x.key] !== null) result = { text: x.content + ': ' + item[x.key][property] }
-            else result = { text: x.content }
-          } else {
-            if (item[x.key] !== undefined && item[x.key] !== null) result = { text: item[x.key][property] }
-            else result = { text: x.content }
+        if (x.content !== '') {
+          if (item[x.key] !== undefined && item[x.key] !== null)
+            result = {
+              text: x.content + ': ' + item[x.key],
+              alignment: x.className && x.className.indexOf(_CENTER) > -1 ? 'center' : x.className && x.className.indexOf(_RIGHT) > -1 ? 'right' : 'left'
+            }
+          else result = {
+            text: x.content,
+            alignment: x.className && x.className.indexOf(_CENTER) > -1 ? 'center' : x.className && x.className.indexOf(_RIGHT) > -1 ? 'right' : 'left'
           }
         } else {
-          if (x.content !== '') {
-            if (item[x.key] !== undefined && item[x.key] !== null) result = { text: x.content + ': ' + item[x.key] }
-            else result = { text: x.content }
-          } else {
-            if (item[x.key] !== undefined && item[x.key] !== null) result = { text: item[x.key] }
-            else result = { text: x.content }
+          if (item[x.key] !== undefined && item[x.key] !== null)
+            result = {
+              text: item[x.key],
+              alignment: x.className && x.className.indexOf(_CENTER) > -1 ? 'center' : x.className && x.className.indexOf(_RIGHT) > -1 ? 'right' : 'left'
+            }
+          else result = {
+            text: x.content,
+            alignment: x.className && x.className.indexOf(_CENTER) > -1 ? 'center' : x.className && x.className.indexOf(_RIGHT) > -1 ? 'right' : 'left'
           }
         }
+
+        if (x.attributes && x.attributes.rowspan) {
+          if (parseInt(x.attributes.rowspan) > 0) {
+            result = {
+              ...result,
+              rowSpan: parseInt(x.attributes.rowspan),
+            }
+          } else {
+            result = {}
+          }
+        }
+        if (x.attributes && x.attributes.colspan) {
+          if (parseInt(x.attributes.colspan) > 0) {
+            result = {
+              ...result,
+              colSpan: parseInt(x.attributes.colspan),
+              border: x.className === _TITLETABLE ? [false, false, false, false] : [true, true, true, true],
+            }
+          } else {
+            result = {}
+          }
+        }
+        // if (x.className && x.className.indexOf(_HIDEBORDER) === -1) {
+        //   result = {
+        //     ...result,
+        //     border: [false, false, false, true],
+        //     alignment: x.className && x.className.indexOf(_CENTER) > -1 ? 'center' : x.className && x.className.indexOf(_RIGHT) > -1 ? 'right' : 'left'
+        //   }
+        // } else {
+        //   result = {
+        //     ...result,
+        //     border: [false, false, false, false],
+        //     alignment: x.className && x.className.indexOf(_CENTER) > -1 ? 'center' : x.className && x.className.indexOf(_RIGHT) > -1 ? 'right' : 'left'
+        //   }
+        // }
+
+        if (dataTable.label === 'columns' && x.className && widthColumns.includes(x.className) === true) {
+          result = {
+            ...result,
+            width: x.className
+          }
+        } else result = {
+          ...result,
+          width: x.className
+        }
+
 
       })
-      if (x.attributes?.rowspan) {
-        if (parseInt(x.attributes.rowspan) > 0) {
-          result = {
-            ...result,
-            rowSpan: parseInt(x.attributes.rowspan),
-          }
-        } else {
-          result = {}
-        }
-      }
-      if (x.attributes?.colspan) {
-        if (parseInt(x.attributes.colspan) > 0) {
-          result = {
-            ...result,
-            colSpan: parseInt(x.attributes.colspan),
-            border: x.className === _TITLETABLE ? [false, false, false, false] : [true, true, true, true],
-          }
-        } else {
-          result = {}
-        }
-      }
-      if (x.attributes?.header) {
-        if (x.attributes?.header === _TRUESTRING) {
-          if (x.className.indexOf(_HIDEBORDER) === -1) {
-            result = {
-              ...result,
-              border: [false, false, false, true],
-              alignment: x.className.indexOf(_CENTER) > -1 ? 'center' : x.className.indexOf(_RIGHT) > -1 ? 'right' : 'left'
-            }
-          } else {
-            result = {
-              ...result,
-              border: [false, false, false, false],
-              alignment: x.className.indexOf(_CENTER) > -1 ? 'center' : x.className.indexOf(_RIGHT) > -1 ? 'right' : 'left'
-            }
-          }
-
-        } else {
-          result = {}
-        }
-      }
-
 
       return result
     }
@@ -325,6 +334,10 @@ export default function ViewPDF(props) {
   //   })
   // }
 
+  function drawColumns(rawItem) {
+    console.log(1231231, rawItem);
+  }
+
   function drawChildItem(rawItem) {
     let type = rawItem.type;
     switch (type) {
@@ -341,20 +354,26 @@ export default function ViewPDF(props) {
         else fontSize = 10.72
 
         return {
-          text: rawItem.content + '\n\n',
+          text: rawItem.content,
           style: {
             fontSize: fontSize,
-            alignment: rawItem.className === _CENTER ? _CENTER : rawItem.className === _LEFT ? _LEFT : _RIGHT
+            alignment: rawItem.className === _CENTER ? _CENTER : rawItem.className === _LEFT ? _LEFT : _RIGHT,
+            margin: rawItem.attributes.style === 'header' ? [0, 5] : []
           }
         }
-
+      case 'columns':
+        const dataItem = {
+          rows: [],
+          label: 'columns'
+        }
+        dataItem.rows.push(rawItem.columns)
+        return pdfTable(dataItem)
       default:
         return "";
     }
   }
 
   function drawTable(rawData) {
-    console.log(rawData);
     const body = rawData.rows.map((row) => {
       return row.map((rowItem) => {
         return rowItem.components?.map((component) => {
@@ -404,14 +423,14 @@ export default function ViewPDF(props) {
             return null;
           }
           //dọc
-          return { dash: { length: 1, space: 1 } };
+          return { dash: { length: 1, space: 4 } };
         },
         vLineStyle: function (i, node) {
           if (i === 0 || i === node.table.widths.length) {
             return null;
           }
           //ngang
-          return { dash: { length: 1 } };
+          return { dash: { length: 4 } };
         },
       }
     }
