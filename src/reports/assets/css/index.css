@@ -210,6 +210,13 @@ button {
 }
 
 
-.formio-component-submit {
+.formio-component-submit,
+.form-control.builder-sidebar_search {
     display: none;
+}
+
+.btn-secondary {
+    color: #fff !important;
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
 }

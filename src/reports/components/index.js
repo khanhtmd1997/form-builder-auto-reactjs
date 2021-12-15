@@ -309,7 +309,7 @@ function ReportAuto() {
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
         <div style={{ flex: '0 0 10%' }}>
-          <Button className="btn-primary" type="success" onClick={addReport}>帳票フォーム追加</Button>
+          <Button className="btn-secondary" type="success" onClick={addReport}>帳票フォーム追加</Button>
         </div>
         <Button type="primary" onClick={saveForm} style={{ marginRight: '24px' }}>
           帳票フォーム保存
