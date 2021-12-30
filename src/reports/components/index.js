@@ -336,6 +336,7 @@ function ReportAuto() {
         <List.Item >tantoName"</List.Item>
       </List>
     )
+    // eslint-disable-next-line
   }, [property])
 
   const renderPropertyMaster = useMemo(() => {
@@ -364,6 +365,7 @@ function ReportAuto() {
         <List.Item >ziritsudo</List.Item>
       </List>
     )
+    // eslint-disable-next-line
   }, [property])
 
   const renderPropertyTable = useMemo(() => {
@@ -377,6 +379,7 @@ function ReportAuto() {
         <List.Item >content</List.Item>
       </List>
     )
+    // eslint-disable-next-line
   }, [property])
 
   return (
