@@ -1,6 +1,6 @@
 
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { FormBuilder as FormBuilderIo, Formio } from "react-formio";
 
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -9,12 +9,10 @@ import "formiojs/dist/formio.full.css";
 import 'antd/dist/antd.css';
 import View from "./view";
 import { formIoData, form } from "../core/data";
-import { Button, Select } from "antd";
+import { Button, Select, List } from "antd";
 
 const { Option } = Select
-const defaultData = [
-  { id: 1, name: '' }
-]
+const defaultData = [{}]
 function ReportAuto() {
   const localForm = localStorage.getItem('form')
   const valueDefault = localStorage.getItem('defaultForm')
@@ -31,6 +29,7 @@ function ReportAuto() {
   const [getValue, setGetValue] = useState(valueDataDefault ? valueDataDefault : 1);
   const [getData, setGetData] = useState(dataDefault ? JSON.parse(dataDefault) : defaultData)
   const [getDataMaster, setGetDataMaster] = useState(dataMasterDefault ? JSON.parse(dataMasterDefault) : [])
+  const [property, setProperty] = useState(1)
   // const []
 
   const data = [
@@ -135,8 +134,6 @@ function ReportAuto() {
       tantoName: "中本　峰子",
     }
   ]
-
-
 
   const dataMaster = [
     {
@@ -256,6 +253,7 @@ function ReportAuto() {
 
   function changeData(value) {
     setGetValue(value)
+    setProperty(value)
     if (parseInt(value) === 2) setGetData(dataTable)
     else if (parseInt(value) === 3) {
       setGetDataMaster(dataMaster)
@@ -283,9 +281,110 @@ function ReportAuto() {
   localStorage.setItem('dataMasterDefault', JSON.stringify(getDataMaster))
   localStorage.setItem('valueDataDefault', getValue)
 
+  const renderPropertyPlan = useMemo(() => {
+    return (
+      <List
+        header={<div>「スクリーニング・ケア計画のテーブルのデータ 」プロパティ名</div>}
+      >
+        <List.Item >adlBathe</List.Item>
+        <List.Item >adlDietaryIntake</List.Item>
+        <List.Item >adlDressingLower</List.Item>
+        <List.Item >adlDressingUpper</List.Item>
+        <List.Item >bedsoreDateOfOnset</List.Item>
+        <List.Item >bedsoreOther</List.Item>
+        <List.Item >bedsorePartFreeDescription</List.Item>
+        <List.Item >bedsorePartOther</List.Item>
+        <List.Item >dailyDegree</List.Item>
+        <List.Item >depthEvaluation</List.Item>
+        <List.Item >evaluationInterval</List.Item>
+        <List.Item >granulationEvaluation</List.Item>
+        <List.Item >haisetuBalloonCatheter</List.Item>
+        <List.Item >haisetuDefecationIncontinence</List.Item>
+        <List.Item >haisetuUrinationIncontinence</List.Item>
+        <List.Item >hyoukaDate</List.Item>
+        <List.Item >id</List.Item>
+        <List.Item >improvedNutrition</List.Item>
+        <List.Item >infectionEvaluation</List.Item>
+        <List.Item >isBedsore</List.Item>
+        <List.Item >isBedsoreWithinThreeMonths</List.Item>
+        <List.Item >isPastBedsore</List.Item>
+        <List.Item >kakuteif</List.Item>
+        <List.Item >kihonKeepStanding</List.Item>
+        <List.Item >kihonSittingContinuous</List.Item>
+        <List.Item >kihonTransfer</List.Item>
+        <List.Item >kihonTurningOver</List.Item>
+        <List.Item >leachateEvaluation</List.Item>
+        <List.Item >makeDate</List.Item>
+        <List.Item >mattersRelatedJobs</List.Item>
+        <List.Item >necroticTissueEvaluation</List.Item>
+        <List.Item >pastBedsorePart</List.Item>
+        <List.Item >pastBedsorePartFreeDescription</List.Item>
+        <List.Item >pocketSizeEvaluation</List.Item>
+        <List.Item >rehabilitation</List.Item>
+        <List.Item >removedPressureOnBed</List.Item>
+        <List.Item >removedPressureOnChair</List.Item>
+        <List.Item >riyousyaBirthDay</List.Item>
+        <List.Item >riyousyaFurigana</List.Item>
+        <List.Item >riyousyaGender</List.Item>
+        <List.Item >riyousyaId</List.Item>
+        <List.Item >riyousyaName</List.Item>
+        <List.Item >sid</List.Item>
+        <List.Item >sizeEvaluation</List.Item>
+        <List.Item >skinCare</List.Item>
+        <List.Item >tantoFurigana</List.Item>
+        <List.Item >tantoId</List.Item>
+        <List.Item >tantoName"</List.Item>
+      </List>
+    )
+    // eslint-disable-next-line
+  }, [property])
+
+  const renderPropertyMaster = useMemo(() => {
+    return (
+      <List
+        header={<div>「データマスタ」プロパティ名</div>}
+      >
+        <List.Item >adlnyuyoku</List.Item>
+        <List.Item >catheter</List.Item>
+        <List.Item >enshou</List.Item>
+        <List.Item >esi</List.Item>
+        <List.Item >jokusobui</List.Item>
+        <List.Item >jokusohukasa</List.Item>
+        <List.Item >jokusoookisa</List.Item>
+        <List.Item >jokusopocket</List.Item>
+        <List.Item >jokusoumu</List.Item>
+        <List.Item >kioreki</List.Item>
+        <List.Item >koui</List.Item>
+        <List.Item >negaeri</List.Item>
+        <List.Item >nikuga</List.Item>
+        <List.Item >ritsui</List.Item>
+        <List.Item >shokuzisesshu</List.Item>
+        <List.Item >sikkin</List.Item>
+        <List.Item >sinshutueki</List.Item>
+        <List.Item >zai</List.Item>
+        <List.Item >ziritsudo</List.Item>
+      </List>
+    )
+    // eslint-disable-next-line
+  }, [property])
+
+  const renderPropertyTable = useMemo(() => {
+    return (
+      <List
+        header={<div>「既定のテーブルのデータ」プロパティ名</div>}
+      >
+        <List.Item >id</List.Item>
+        <List.Item >date</List.Item>
+        <List.Item >userName</List.Item>
+        <List.Item >content</List.Item>
+      </List>
+    )
+    // eslint-disable-next-line
+  }, [property])
+
   return (
     <div className="App">
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px', marginTop: '16px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px', marginTop: '16px', alignItems: 'center' }}>
         <div style={{ flex: '0 0 6%' }}>データ選択</div>
         <div style={{ flex: '0 0 15%' }} onChange={changeData}>
           <Select placeholder="Choice data" defaultValue={getValue.toString()} value={getValue.toString()} onChange={changeData} style={{ width: "300px" }}>
@@ -294,6 +393,21 @@ function ReportAuto() {
             <Option value="3">スクリーニング・ケア計画のテーブルのデータ</Option>
           </Select>
         </div>
+        {
+          parseInt(property) !== 1 ?
+            <div style={{ flex: '0 0 15%', marginLeft: '24px', maxHeight: '200px', overflowY: 'auto' }}>
+              {
+                parseInt(property) === 2 ? renderPropertyTable : parseInt(property) === 3 ? renderPropertyPlan : null
+              }
+            </div> : null
+        }
+
+        {
+          parseInt(property) === 3 ?
+            <div style={{ flex: '0 0 15%', marginLeft: '24px', maxHeight: '200px', overflowY: 'auto' }}>
+              {renderPropertyMaster}
+            </div> : null
+        }
         <div style={{ flex: '0 0 6%' }}>帳票選択</div>
         <div style={{ flex: '0 0 15%' }}>
           <Select defaultValue={valueForm} value={valueForm} onChange={changeForm} style={{ width: "300px" }}>

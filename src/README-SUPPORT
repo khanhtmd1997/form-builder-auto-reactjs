@@ -4,7 +4,7 @@
     + formIO: 4.3.0
     + pdfmake: 0.2.4
 
-- Các fields sử dụng LAYOUT: 
+- Các fields sử dụng ở LAYOUT phía tay trái: 
     + Html Element (dùng để hiển thị text)
     + Columns (chia các columns trên 1 row)
     + Table (dùng để hiển thị table)
@@ -47,7 +47,7 @@
                         + Nếu muốn hiển thị nhiều list (cứ thêm vào tags theo thứ tự): adlnyuyoku adlBathe catheter adlDietaryIntake
 
             ** LAYOUT: add các (HTML ATTRIBUTES) nếu có
-                *** margin: 0,0,0,0 (chia khoảng cách trái, trên, phải, dưới)
+                *** margin: 0,0,0,0 (chia khoảng cách left, top, right, bottom)
                 *** width: 10% || * => (dành cho COLUMNS, * là auto)
                 *** formatdate: true (dùng để format ngày (-) thành (/) )
                 *** selectbox: true && sex: true (dùng để checkbox giới tính)
@@ -56,18 +56,20 @@
                 ***rowspan: 1/ colspan: 1 (sử dụng cho table)
                 *** border: true,true,true,true (sử dụng cho table) 
                 *** sourcetable: true (sử dụng để hiển thị title table không bị render lại trong table)
+                *** hideborder: true (sử dụng cho table lồng table không hiển thị border)
+                *** borderbottom: true (sử dụng cho table lồng table hiển thị border bottom)
 
     + COLUMNS (dùng để chia columns cho 1 row):
         * Ở DISPLAY:
             ** COLUMN PROPERTIES: (chia số column mong muốn trên 1 row)
         * LAYOUT:
-            ** margin: 0,0,0,0 (chia khoảng cách trái, trên, phải, dưới)
+            ** margin: 0,0,0,0 (chia khoảng cách left, top, right, bottom)
     + TABLE:
         * Ở DISPLAY:
             ** NUMBER OF ROWS: (hiển thị số row mong muốn trên 1 table)
             ** NUMBER OF COLUMNS: (hiển thị số columns mong muốn trên 1 table)
         * LAYOUT:
-            ** margin: 0,0,0,0 (chia khoảng cách trái, trên, phải, dưới)
+            ** margin: 0,0,0,0 (chia khoảng cách left, top, right, bottom)
             ** widths: *,*,* || 10,5,* (chia width cho số columns)
                 *** ví dụ có 3 columns thì: *,*,* hoặc set cho từng column bằng cách thay thế * bằng số ví dụ 10,5,*
             ** heights: tương tự như widths nhưng chia cho rows
