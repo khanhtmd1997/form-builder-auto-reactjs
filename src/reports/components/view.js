@@ -512,6 +512,7 @@ function View(props) {
         })
       })
     });
+
     return {
       table: {
         body,
@@ -526,10 +527,10 @@ function View(props) {
           return (i === 0 || i === node.table.widths.length) ? 2 : 1;
         },
         hLineColor: function (i, node) {
-          return 'white';
+          return rawItem.attributes && rawItem.attributes.hideborder === 'true' ? 'white' : 'black';
         },
         vLineColor: function (i, node) {
-          return 'white';
+          return rawItem.attributes && rawItem.attributes.hideborder === 'true' ? 'white' : 'black';
         },
         hLineStyle: function (i, node) {
           if (i === 0 || i === node.table.body.length) {
